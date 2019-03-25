@@ -419,7 +419,7 @@ public:
 					last = mid;
 			}
 		}
-	return -1;
+		return -1;
 	}
 };
 </code></pre>
@@ -508,6 +508,175 @@ public:
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/06/03/lc2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc3" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc3/">Remove Duplicates from Sorted Array</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc3/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>LeetCode 上二叉树的节点定义如下：</p>
+<pre><code>struct TreeNode {
+	int val;
+	TreeNode *left;
+	TreeNode *right;
+	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
+};
+</code></pre>
+<h2 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h2>
+<p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
+<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>
+与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
+<p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
+<p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
+<h2 id="binary-tree-preorder-traversal"><a class="markdownIt-Anchor" href="#binary-tree-preorder-traversal"></a> Binary Tree Preorder Traversal</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>用栈或者 Morris 遍历。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
+<p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		const TreeNode *p;
+		stack&lt;const TreeNode *&gt; s;
+		p = root;
+		if (p != nullptr) s.push(p);
+		while (!s.empty()) {
+			p = s.top();
+			s.pop();
+			result.push_back(p-&gt;val);
+			if (p-&gt;right != nullptr) s.push(p-&gt;right);
+			if (p-&gt;left != nullptr) s.push(p-&gt;left);
+		}
+		return result;
+	}
+};
+</code></pre>
+<p><strong>Morris 先序遍历</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		TreeNode *cur, *prev;
+		cur = root;
+		while (cur != nullptr) {
+			if (cur-&gt;left == nullptr) {
+				result.push_back(cur-&gt;val);
+				prev = cur; /* cur 刚刚被访问过 */
+				cur = cur-&gt;right;
+				} else {
+				/* 查找前驱 */
+				TreeNode *node = cur-&gt;left;
+				while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
+					node = node-&gt;right;
+				if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
+					result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
+					node-&gt;right = cur;
+					prev = cur; /* cur 刚刚被访问过 */
+					cur = cur-&gt;left;
+				} else { /* 已经线索化，则删除线索 */
+					node-&gt;right = nullptr;
+					/* prev = cur; 不能有这句，cur 已经被访问 */
+					cur = cur-&gt;right;
+				}
+			}
+		}
+		return result;
+	}
+};
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">递归</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc3/">展开全文 >></a>
         </p>
       
 
@@ -898,6 +1067,14 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">树</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
               </li>
              
               <li class="article-tag-list-item">
