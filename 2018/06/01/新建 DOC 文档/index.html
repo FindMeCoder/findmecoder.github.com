@@ -9,14 +9,14 @@
   <title>特征工程 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="机器学习">
-<meta name="keywords" content="工具使用,杂文">
+<meta name="keywords" content="机器学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="特征工程">
 <meta property="og:url" content="http://yoursite.com/2018/06/01/新建 DOC 文档/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="机器学习">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-24T12:15:39.145Z">
+<meta property="og:updated_time" content="2019-03-24T13:15:50.269Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="特征工程">
 <meta name="twitter:description" content="机器学习">
@@ -200,13 +200,18 @@ var _hmt = _hmt || [];
       
         <h2 id="主要内容"><a class="markdownIt-Anchor" href="#主要内容"></a> 主要内容</h2>
 <blockquote>
-<h4 id="markdown是什么"><a class="markdownIt-Anchor" href="#markdown是什么"></a> Markdown<em>是什么</em>？</h4>
-<h4 id="谁创造了它"><a class="markdownIt-Anchor" href="#谁创造了它"></a> <em>谁</em>创造了它？</h4>
-<h4 id="为什么要使用它"><a class="markdownIt-Anchor" href="#为什么要使用它"></a> <em>为什么</em>要使用它？</h4>
-<h4 id="怎么使用"><a class="markdownIt-Anchor" href="#怎么使用"></a> <em>怎么</em>使用？</h4>
-<h4 id="谁在用"><a class="markdownIt-Anchor" href="#谁在用"></a> <em>谁</em>在用？</h4>
-<h4 id="尝试一下"><a class="markdownIt-Anchor" href="#尝试一下"></a> 尝试一下</h4>
+<h4 id="特征工程概述"><a class="markdownIt-Anchor" href="#特征工程概述"></a> 特征工程概述</h4>
+<h4 id="特征归一化"><a class="markdownIt-Anchor" href="#特征归一化"></a> 特征归一化</h4>
+<h4 id="高维组合特征及处理"><a class="markdownIt-Anchor" href="#高维组合特征及处理"></a> 高维组合特征及处理</h4>
 </blockquote>
+<h2 id="正文"><a class="markdownIt-Anchor" href="#正文"></a> 正文</h2>
+<h3 id="1-特征工程概述"><a class="markdownIt-Anchor" href="#1-特征工程概述"></a> 1. 特征工程概述</h3>
+<p>数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占有非常重要的作用，一般认为括特征构建、特征提取、特征选择三个部分。特征构建比较麻烦，需要一定的经验。 特征提取与特征选择都是为了从原始特征中找出最有效的特征。它们之间的区别是特征提取强调通过特征转换的方式得到一组具有明显物理或统计意义的特征；而特征选择是从特征集合中挑选一组具有明显物理或统计意义的特征子集。两者都能帮助减少特征的维度、数据冗余，特征提取有时能发现更有意义的特征属性，特征选择的过程经常能表示出每个特征的重要性对于模型构建的重要性。本文主要尝试总结几个常用的特征提取和特征选择的方法。</p>
+<h3 id="2-特征归一化"><a class="markdownIt-Anchor" href="#2-特征归一化"></a> 2. 特征归一化</h3>
+<p>对数值类型的特征做归一化可以将所有的特征都统一到一个大致相同的数值区间内。最常用的方法主要有以下两种。<br>
+（1）线性函数归一化（Min-Max Scaling）。它对原始数据进行线性变换，使结果映射到[0, 1]的范围，实现对原始数据的等比缩放。归一化公式如下。</p>
+<p>其中X为原始数据，Xmax、Xmin分别为数据最大值和最小值</p>
+<h3 id="3-特征归一化"><a class="markdownIt-Anchor" href="#3-特征归一化"></a> 3. 特征归一化</h3>
 
       
 
@@ -220,11 +225,7 @@ var _hmt = _hmt || [];
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">工具使用</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">杂文</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">机器学习</a>
         		</li>
       		
 		</ul>
@@ -305,11 +306,15 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-  
-    <a href="/2018/06/01/主要内容/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">特征工程</div>
-      <i class="icon-circle-right"></i>
+    <a href="/2018/06/01/主要内容/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          特征工程
+        
+      </div>
     </a>
+  
   
 </nav>
 
@@ -334,7 +339,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#主要内容"><span class="toc-number">1.</span> <span class="toc-text"> 主要内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#markdown是什么"><span class="toc-number">1.0.1.</span> <span class="toc-text"> Markdown是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#谁创造了它"><span class="toc-number">1.0.2.</span> <span class="toc-text"> 谁创造了它？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么要使用它"><span class="toc-number">1.0.3.</span> <span class="toc-text"> 为什么要使用它？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#怎么使用"><span class="toc-number">1.0.4.</span> <span class="toc-text"> 怎么使用？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#谁在用"><span class="toc-number">1.0.5.</span> <span class="toc-text"> 谁在用？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#尝试一下"><span class="toc-number">1.0.6.</span> <span class="toc-text"> 尝试一下</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#主要内容"><span class="toc-number">1.</span> <span class="toc-text"> 主要内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#特征工程概述"><span class="toc-number">1.0.1.</span> <span class="toc-text"> 特征工程概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#特征归一化"><span class="toc-number">1.0.2.</span> <span class="toc-text"> 特征归一化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#高维组合特征及处理"><span class="toc-number">1.0.3.</span> <span class="toc-text"> 高维组合特征及处理</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#正文"><span class="toc-number">2.</span> <span class="toc-text"> 正文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-特征工程概述"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 特征工程概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-特征归一化"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. 特征归一化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-特征归一化"><span class="toc-number">2.3.</span> <span class="toc-text"> 3. 特征归一化</span></a></li></ol></li>
                     </div>
                 </span>
             </div>
@@ -485,14 +490,6 @@ MathJax.Hub.Queue(function() {
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">工具使用</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">杂文</a>
-              </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
