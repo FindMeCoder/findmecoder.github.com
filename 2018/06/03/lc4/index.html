@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: 算法 | Hexo</title>
+  <title>Binary Tree Level Order Traversal | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/tags/算法/index.html">
+  <meta name="description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
+<meta name="keywords" content="LeetCode,算法,树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Binary Tree Level Order Traversal">
+<meta property="og:url" content="http://yoursite.com/2018/06/03/lc4/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-26T10:29:39.321Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="Binary Tree Level Order Traversal">
+<meta name="twitter:description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -173,158 +178,218 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-lc4" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Binary Tree Level Order Traversal
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc4/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="binary-tree-level-order-traversal-i"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-i"></a> Binary Tree Level Order Traversal I</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).<br>
+For example: Given binary tree {3,9,20,#,#,15,7},<br>
+return its level order traversal as:<br>
+[<br>
+[3],<br>
+[9,20],<br>
+[15,7]<br>
+]</p>
+<h3 id="递归版"><a class="markdownIt-Anchor" href="#递归版"></a> 递归版</h3>
+<p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+		vector&lt;vector&lt;int&gt;&gt; result;
+		traverse(root, 1, result);
+		return result;
+	}
+	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+		if (!root) return;
+		if (level &gt; result.size())
+		result.push_back(vector&lt;int&gt;());
+		result[level-1].push_back(root-&gt;val);
+		traverse(root-&gt;left, level+1, result);
+		traverse(root-&gt;right, level+1, result);
+	}
+};
+</code></pre>
+<h3 id="迭代版"><a class="markdownIt-Anchor" href="#迭代版"></a> 迭代版</h3>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+		vector&lt;vector&lt;int&gt; &gt; result;
+		if(root == nullptr) return result;
+		queue&lt;TreeNode*&gt; current, next;
+		vector&lt;int&gt; level; // elments in level level
+		current.push(root);
+		while (!current.empty())
+		{
+			while (!current.empty()) 
+			{
+			TreeNode* node = current.front();
+			current.pop();
+			level.push_back(node-&gt;val);
+			if (node-&gt;left != nullptr) next.push(node-&gt;left);
+			if (node-&gt;right != nullptr) next.push(node-&gt;right);
+			}
+			result.push_back(level);
+			level.clear();
+			swap(next, current);
+		}
+		return result;
+	}
+};
+</code></pre>
+<h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
+<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
+<p>Given a binary tree, return the bottom-up level order traversal of its nodes’ values. (ie, from left to right,level by level from leaf to root).<br>
+For example: Given binary tree {3,9,20,#,#,15,7}<br>
+return its bottom-up level order traversal as:<br>
+[<br>
+[15,7]<br>
+[9,20],<br>
+[3],<br>
+]</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>在上一题的基础上，reverse() 一下即可。</p>
+<h3 id="递归版-2"><a class="markdownIt-Anchor" href="#递归版-2"></a> 递归版</h3>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; levelOrderBottom(TreeNode *root) {
+		vector&lt;vector&lt;int&gt;&gt; result;
+		traverse(root, 1, result);
+		std::reverse(result.begin(), result.end()); // 比上一题多此一行
+		return result;
+	}
+	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+		if (!root) return;
+		if (level &gt; result.size())
+		result.push_back(vector&lt;int&gt;());
+		result[level-1].push_back(root-&gt;val);
+		traverse(root-&gt;left, level+1, result);
+		traverse(root-&gt;right, level+1, result);
+	}
+};
+</code></pre>
+<h3 id="迭代版-2"><a class="markdownIt-Anchor" href="#迭代版-2"></a> 迭代版</h3>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+		vector&lt;vector&lt;int&gt; &gt; result;
+		if(root == nullptr) return result;
+		queue&lt;TreeNode*&gt; current, next;
+		vector&lt;int&gt; level; // elments in level level
+		current.push(root);
+		while (!current.empty())
+		{
+			while (!current.empty()) 
+			{
+			TreeNode* node = current.front();
+			current.pop();
+			level.push_back(node-&gt;val);
+			if (node-&gt;left != nullptr) next.push(node-&gt;left);
+			if (node-&gt;right != nullptr) next.push(node-&gt;right);
+			}
+			result.push_back(level);
+			level.clear();
+			swap(next, current);
+		}
+		reverse(result.begin(), result.end());
+		return result;
+	}
+};
+</code></pre>
+<h2 id="binary-tree-zigzag-level-order-traversal"><a class="markdownIt-Anchor" href="#binary-tree-zigzag-level-order-traversal"></a> Binary Tree Zigzag Level Order Traversal</h2>
+<h3 id="描述-3"><a class="markdownIt-Anchor" href="#描述-3"></a> 描述</h3>
+<p>Given a binary tree, return the zigzag level order traversal of its nodes’ values. (ie, from left to right,<br>
+then right to left for the next level and alternate between).<br>
+For example: Given binary tree 3,9,20,#,#,15,7<br>
+return its zigzag level order traversal as:<br>
+[<br>
+[3],<br>
+[20,9],<br>
+[15,7]<br>
+]</p>
+<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
+<p>广度优先遍历，用一个 bool 记录是从左到右还是从右到左，每一层结束就翻转一下。</p>
+<h3 id="递归版-3"><a class="markdownIt-Anchor" href="#递归版-3"></a> 递归版</h3>
+<p>递归版，时间复杂度 O(n)，空间复杂度 O(n)</p>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+	vector&lt;vector&lt;int&gt;&gt; result;
+	traverse(root, 1, result, true);
+	return result;
+	}
+	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result,bool left_to_right) {
+	if (!root) return;
+	if (level &gt; result.size())
+		result.push_back(vector&lt;int&gt;());
+	if (left_to_right)
+		result[level-1].push_back(root-&gt;val);
+	else
+		result[level-1].insert(result[level-1].begin(), root-&gt;val);
+		traverse(root-&gt;left, level+1, result, !left_to_right);
+		traverse(root-&gt;right, level+1, result, !left_to_right);
+	}
+};
+</code></pre>
+<h3 id="迭代版-3"><a class="markdownIt-Anchor" href="#迭代版-3"></a> 迭代版</h3>
+<pre><code>class Solution {
+public:
+	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+		vector&lt;vector&lt;int&gt; &gt; result;
+		if (nullptr == root) return result;
+		queue&lt;TreeNode*&gt; q;
+		bool left_to_right = true; //left to right
+		vector&lt;int&gt; level; // one level's elements
+		q.push(root);
+		q.push(nullptr); // level separator
+		while (!q.empty()) {
+			TreeNode *cur = q.front();
+			q.pop();
+			if (cur) {
+			level.push_back(cur-&gt;val);
+			if (cur-&gt;left) q.push(cur-&gt;left);
+			if (cur-&gt;right) q.push(cur-&gt;right);
+			} else {
+			if (left_to_right) {
+				result.push_back(level);
+				} else {
+					reverse(level.begin(), level.end());
+					result.push_back(level);
+				}
+					level.clear();
+					left_to_right = !left_to_right;
+					if (q.size() &gt; 0) 
+						q.push(nullptr);
+				}
+			}
+		return result;
+	}
+};</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/03/lc2/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/03/lc2/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/03/New Document/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/03/New Document/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/03/lc4/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/03/lc4/">Binary Tree Level Order Traversal</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -344,7 +409,7 @@ var _hmt = _hmt || [];
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -357,192 +422,146 @@ var _hmt = _hmt || [];
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/06/03/lc4/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/03/lc5/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/06/03/New Document/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Remove Duplicates from Sorted Array
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/03/lc5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Binary Tree Level Order Traversal</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-level-order-traversal-i"><span class="toc-number">1.</span> <span class="toc-text"> Binary Tree Level Order Traversal I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版"><span class="toc-number">1.2.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版"><span class="toc-number">1.3.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-level-order-traversal-ii"><span class="toc-number">2.</span> <span class="toc-text"> Binary Tree Level Order Traversal II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-2"><span class="toc-number">2.3.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-2"><span class="toc-number">2.4.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-zigzag-level-order-traversal"><span class="toc-number">3.</span> <span class="toc-text"> Binary Tree Zigzag Level Order Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-3"><span class="toc-number">3.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-2"><span class="toc-number">3.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-3"><span class="toc-number">3.3.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-3"><span class="toc-number">3.4.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/03/lc3/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/03/lc3/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">递归</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/02/lc1/" class="archive-article-date">
-  	<time datetime="2018-06-02T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/02/lc1/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+	
+    <!-- ������City�氲װ���� -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTg0My8xNjM3MA==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+   
   
   
-    </div></section>
+  
   
 
-    
+  
+
+  
 
 
           </div>
@@ -565,9 +584,9 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
