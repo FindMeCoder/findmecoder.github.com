@@ -175,28 +175,38 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-ml" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+    <article id="post-lc8" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/25/ml/">ml</a>
+      <a class="article-title" href="/2018/09/03/lc8/">Two Sum</a>
     </h1>
   
 
         
-        <a href="/2019/03/25/ml/" class="archive-article-date">
-  	<time datetime="2019-03-25T13:49:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-25</time>
+        <a href="/2018/09/03/lc8/" class="archive-article-date">
+  	<time datetime="2018-09-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-03</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>dad</p>
-<p><img src="/2019/03/25/ml/%5Cml%5C1.jpg" alt=""></p>
+        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given an array of integers, find two numbers such that they add up to a specific target number.<br>
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.<br>
+You may assume that each input would have exactly one solution.<br>
+Input: numbers={2, 7, 11, 15}, target=9<br>
+Output: index1=1, index2=2</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>方法 1：暴力，复杂度 O(n2)，会超时<br>
+方法 2：hash。用一个哈希表，存储每个数对应的下标，复杂度 O(n).<br>
+方法 3：先排序，然后左右夹逼，排序 O(nlogn)，左右夹逼 O(n)，最终 O(nlogn)。但是注<br>
+意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
 
       
 
@@ -205,11 +215,169 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/03/25/ml/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/03/lc8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc7" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/03/lc7/">Longest Consecutive Sequence</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/03/lc7/" class="archive-article-date">
+  	<time datetime="2018-07-03T13:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given an unsorted array of integers, find the length of the longest consecutive elements sequence.<br>
+For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3, 4]. Return its length: 4.<br>
+Your algorithm should run in O(n) complexity<br>
+You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>如果允许 O(n log n) 的复杂度，那么可以先排序，可是本题要求 O(n)。由于序列里的元素是无序的，又要求 O(n)，首先要想到用哈希表。用一个哈希表 unordered_map&lt;int, bool&gt; used 记录每个元素是否使用，对每个元素，以该元素为中心，往左右扩张，直到不连续为止，记录下最长的长度</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
+<pre><code>int longestConsecutive(const vector&lt;int&gt; &amp;num){
+	unordered_map&lt;int, bool&gt; used;
+	for (auto i : num)
+		used[i] = false;
+	int longest = 0;
+	for (auto i : num)
+	{
+		if (used[i])
+			continue;
+		used[i] = true;
+		int length = 1;
+		for (int j = i + 1; used.find(j) != used.end; j++){
+			used[j] = true;
+			++length;
+		}
+		for (int j = i - 1; used.find(j) != used.end(); j--){
+			used[j] = true;
+			+length;
+		}
+		longest = max(length, longest);
+	}
+	return longest;
+}
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/03/lc7/">展开全文 >></a>
         </p>
       
 
@@ -408,19 +576,113 @@ public:
 
 
   
-    <article id="post-New Document" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/New Document/">Remove Duplicates from Sorted Array</a>
+      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
     </h1>
   
 
         
-        <a href="/2018/06/03/New Document/" class="archive-article-date">
+        <a href="/2018/06/03/lc5/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc6" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc6/">Remove Duplicates from Sorted Array</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc6/" class="archive-article-date">
   	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
 </a>
         
@@ -436,7 +698,7 @@ You may assume no duplicate exists in the array.</p>
 <h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
 <p>二分查找，难度主要在于左右边界的确定。</p>
 <h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
+<p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
 	int search(int A[], int n, int target) {
@@ -507,7 +769,7 @@ public:
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/New Document/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/06/03/lc6/">展开全文 >></a>
         </p>
       
 
@@ -784,100 +1046,6 @@ public:
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/06/03/lc4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/03/lc5/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
         </p>
       
 
@@ -1310,6 +1478,236 @@ public:
 
 
   
+    <article id="post-c++1" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/02/c++1/">为什么epoll是线程安全？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/03/02/c++1/" class="archive-article-date">
+  	<time datetime="2018-03-02T02:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论:</h3>
+<p><em><strong>简要结论就是epoll是通过锁来保证线程安全的, epoll中粒度最小的自旋锁ep-&gt;lock(spinlock)用来保护就绪的队列, 互斥锁ep-&gt;mtx用来保护epoll的重要数据结构红黑树。</strong></em></p>
+<h3 id="源码分析"><a class="markdownIt-Anchor" href="#源码分析"></a> 源码分析</h3>
+<p>先来看一下epoll的核心数据结构</p>
+<pre><code>struct eventpoll {
+	...
+	/* 一个自旋锁 */
+	spinlock_t lock;
+		
+	/* 一个互斥锁 */
+	struct mutex mtx;
+
+	/* List of ready file descriptors */
+	/* 就绪fd队列 */
+	struct list_head rdllist;
+
+	/* RB tree root used to store monitored fd structs */
+	/* 红黑树 */
+	struct rb_root_cached rbr;
+	...
+};
+</code></pre>
+<p>其中epoll主要需要考虑是否线程安全的接口是epoll_ctl() 和 epoll_wait()。</p>
+<h4 id="epoll_ctl"><a class="markdownIt-Anchor" href="#epoll_ctl"></a> epoll_ctl()</h4>
+<p>以下代码即为epoll_ctl()接口的实现, 当需要根据不同的operation通过ep_insert() 或者ep_remove()等接口对epoll自身的数据结构进行操作时都提前获得了ep-&gt;mex锁。</p>
+<pre><code>/ * epoll_ctl() 接口 */
+SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
+	struct epoll_event __user *, event)
+{
+	...
+	/* 获得 mtx 锁 */
+	mutex_lock_nested(&amp;ep-&gt;mtx, 0);
+	...
+
+	epi = ep_find(ep, tf.file, fd);
+
+	error = -EINVAL;
+	switch (op) {
+	case EPOLL_CTL_ADD:
+		/* 
+		 * 通过ep_insert()接口来完成EPOLL_CTL_ADD的操作
+		 * /
+		if (!epi) {
+			epds.events |= POLLERR | POLLHUP;
+			error = ep_insert(ep, &amp;epds, tf.file, fd, full_check);
+		} else
+			error = -EEXIST;
+		if (full_check)
+			clear_tfile_check_list();
+		break;
+	case EPOLL_CTL_DEL:
+		/* 
+		 * 通过ep_insert()接口来完成EPOLL_CTL_ADD的操作
+		 * /
+		if (epi)
+			error = ep_remove(ep, epi);
+		else
+			error = -ENOENT;
+		break;
+	case EPOLL_CTL_MOD:
+		/* 
+		 * 通过ep_insert()接口来完成EPOLL_CTL_ADD的操作
+		 * /
+		if (epi) {
+			if (!(epi-&gt;event.events &amp; EPOLLEXCLUSIVE)) {
+				epds.events |= POLLERR | POLLHUP;
+				error = ep_modify(ep, epi, &amp;epds);
+			}
+		} else
+			error = -ENOENT;
+		break;
+	}
+	if (tep != NULL)
+		mutex_unlock(&amp;tep-&gt;mtx);
+	mutex_unlock(&amp;ep-&gt;mtx);		/* 释放mtx锁 */
+	...
+}
+</code></pre>
+<p>挑选其中EPOLL_CTL_ADD来简单看一下ep_insert()的实现。</p>
+<pre><code>static int ep_insert(struct eventpoll *ep, struct epoll_event *event,
+		     struct file *tfile, int fd, int full_check)
+{
+	...
+	/*
+	 * Add the current item to the RB tree. All RB tree operations are
+	 * protected by &quot;mtx&quot;, and ep_insert() is called with &quot;mtx&quot; held.
+	 */
+	 /*
+	  * 在使用ep_rbtree_insert()函数对epoll的核心数据结构红黑树插入之前，
+	  * 已经获得了ep-&gt;mex锁
+	  * /
+	ep_rbtree_insert(ep, epi);
+
+	...
+}
+</code></pre>
+<p>所以当epoll操作红黑树时，通过ep-&gt;mex来保证线程安全。</p>
+<h4 id="epoll_wait"><a class="markdownIt-Anchor" href="#epoll_wait"></a> epoll_wait()</h4>
+<p>再来看看epll_wait()的代码实现。</p>
+<pre><code>SYSCALL_DEFINE4(epoll_wait, int, epfd, struct epoll_event __user *, events,
+		int, maxevents, int, timeout)
+{
+	...
+	/* Time to fish for events ... */
+	/* 
+	 * 可以看到epoll_wait()是通过ep_poll()来等待就绪事件的.
+	 * /
+	error = ep_poll(ep, events, maxevents, timeout);
+	...
+}
+</code></pre>
+<p>epoll_wait()既然是通过ep_poll()接口来等待就绪的fd队列，那可以通过ep_poll_callback()回调函数来看一下ep_poll()背后的机制到底是什么?</p>
+<pre><code>static int ep_poll_callback(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
+{
+	int pwake = 0;
+	unsigned long flags;
+	struct epitem *epi = ep_item_from_wait(wait);
+	struct eventpoll *ep = epi-&gt;ep;
+	int ewake = 0;
+	
+	/* 获得自旋锁 ep-&gt;lock来保护就绪队列
+	 * 自旋锁ep-&gt;lock在ep_poll()里被释放
+	 * /
+	spin_lock_irqsave(&amp;ep-&gt;lock, flags);
+
+	/* If this file is already in the ready list we exit soon */
+	/* 在这里将就绪事件添加到rdllist */
+	if (!ep_is_linked(&amp;epi-&gt;rdllink)) {
+		list_add_tail(&amp;epi-&gt;rdllink, &amp;ep-&gt;rdllist);
+		ep_pm_stay_awake_rcu(epi);
+	}
+	...
+}
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">网络编程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">epoll</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/03/02/c++1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
 
 
@@ -1436,6 +1834,22 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">C++</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">后台开发</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">epoll</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">二分法</a>
               </li>
              
@@ -1444,11 +1858,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">递归</a>
+                <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
               </li>
             
             <div class="clearfix"></div>

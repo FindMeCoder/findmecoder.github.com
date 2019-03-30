@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Binary Tree Level Order Traversal | Hexo</title>
+  <title>Two Sum | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Binary Tree Level Order Traversal II  描述">
-<meta name="keywords" content="LeetCode,算法,树">
+  <meta name="description" content="描述 Given an array of integers, find two numbers such that they add up to a specific target number. The function twoSum should return indices of the two numbers such that they add up to the target, wh">
+<meta name="keywords" content="LeetCode,数组,算法,二分法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Binary Tree Level Order Traversal">
-<meta property="og:url" content="http://yoursite.com/2018/06/03/lc5/index.html">
+<meta property="og:title" content="Two Sum">
+<meta property="og:url" content="http://yoursite.com/2018/09/03/lc8/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Binary Tree Level Order Traversal II  描述">
+<meta property="og:description" content="描述 Given an array of integers, find two numbers such that they add up to a specific target number. The function twoSum should return indices of the two numbers such that they add up to the target, wh">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-26T10:29:54.703Z">
+<meta property="og:updated_time" content="2019-03-29T13:09:51.135Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Binary Tree Level Order Traversal">
-<meta name="twitter:description" content="Binary Tree Level Order Traversal II  描述">
+<meta name="twitter:title" content="Two Sum">
+<meta name="twitter:description" content="描述 Given an array of integers, find two numbers such that they add up to a specific target number. The function twoSum should return indices of the two numbers such that they add up to the target, wh">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -178,28 +178,38 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-lc5" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-lc8" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Binary Tree Level Order Traversal
+      Two Sum
     </h1>
   
 
         
-        <a href="/2018/06/03/lc5/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+        <a href="/2018/09/03/lc8/" class="archive-article-date">
+  	<time datetime="2018-09-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-03</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given an array of integers, find two numbers such that they add up to a specific target number.<br>
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.<br>
+You may assume that each input would have exactly one solution.<br>
+Input: numbers={2, 7, 11, 15}, target=9<br>
+Output: index1=1, index2=2</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>方法 1：暴力，复杂度 O(n2)，会超时<br>
+方法 2：hash。用一个哈希表，存储每个数对应的下标，复杂度 O(n).<br>
+方法 3：先排序，然后左右夹逼，排序 O(nlogn)，左右夹逼 O(n)，最终 O(nlogn)。但是注<br>
+意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
 
       
 
@@ -217,11 +227,15 @@ var _hmt = _hmt || [];
         		</li>
       		 
         		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
         		</li>
       		
 		</ul>
@@ -288,7 +302,7 @@ var _hmt = _hmt || [];
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/06/03/lc5/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/09/03/lc8/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -302,18 +316,9 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2018/06/03/lc2/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Remove Duplicates from Sorted Array
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/06/03/lc6/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Remove Duplicates from Sorted Array</div>
+    <a href="/2018/07/03/lc7/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Longest Consecutive Sequence</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -340,7 +345,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-level-order-traversal-ii"><span class="toc-number">1.</span> <span class="toc-text"> Binary Tree Level Order Traversal II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">3.</span> <span class="toc-text"> 代码</span></a></li></ol>
                     </div>
                 </span>
             </div>
