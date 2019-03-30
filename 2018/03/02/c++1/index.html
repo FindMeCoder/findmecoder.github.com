@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="结论: 简要结论就是epoll是通过锁来保证线程安全的, epoll中粒度最小的自旋锁ep-&amp;gt;lock(spinlock)用来保护就绪的队列, 互斥锁ep-&amp;gt;mtx用来保护epoll的重要数据结构红黑树。  源码分析 先来看一下epoll的核心数据结构 struct eventpoll { 	... 	/* 一个自旋锁 */ 	spinlock_t lock; 		 	/* 一个互斥">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-30T01:24:22.097Z">
+<meta property="og:updated_time" content="2019-03-30T01:27:26.386Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="为什么epoll是线程安全？">
 <meta name="twitter:description" content="结论: 简要结论就是epoll是通过锁来保证线程安全的, epoll中粒度最小的自旋锁ep-&amp;gt;lock(spinlock)用来保护就绪的队列, 互斥锁ep-&amp;gt;mtx用来保护epoll的重要数据结构红黑树。  源码分析 先来看一下epoll的核心数据结构 struct eventpoll { 	... 	/* 一个自旋锁 */ 	spinlock_t lock; 		 	/* 一个互斥">
@@ -369,7 +369,7 @@ SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
         		</li>
       		
 		</ul>
@@ -438,11 +438,11 @@ SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
   
 <nav id="article-nav">
   
-    <a href="/2018/06/01/zy/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/03/02/c++3/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          特征工程
+          c++中const关键字总结
         
       </div>
     </a>
@@ -624,18 +624,6 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -649,6 +637,22 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">epoll</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
              
               <li class="article-tag-list-item">
