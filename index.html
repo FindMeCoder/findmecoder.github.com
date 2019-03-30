@@ -1559,7 +1559,7 @@ const int &amp;j = i; // j为绑定到i的const引用，不允许使用j来修�
 <p>(2). 修饰值本身的const均为顶层const：</p>
 <pre><code>const int i = 0; // 顶层const;
 </code></pre>
-<h4 id="四-const与函数"><a class="markdownIt-Anchor" href="#四-const与函数"></a> 四. const与函数</h4>
+<h3 id="四-const与函数"><a class="markdownIt-Anchor" href="#四-const与函数"></a> 四. const与函数</h3>
 <h4 id="1-值传递的const形参"><a class="markdownIt-Anchor" href="#1-值传递的const形参"></a> 1. 值传递的const形参</h4>
 <pre><code>void fcn(const int i) { /* ... */ }
 这个函数中，变量i为值传递形参，根据值传递的初始化规则，形参i是否为const与传入的实参是否为const是完全无关的。这里的const仅表示i在函数体中不允许修改。
