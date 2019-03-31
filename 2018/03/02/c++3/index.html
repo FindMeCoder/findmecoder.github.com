@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>c++中const关键字总结 | Hexo</title>
+  <title>stl简介 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
 <meta name="keywords" content="C++,后台开发,STL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="c++中const关键字总结">
+<meta property="og:title" content="stl简介">
 <meta property="og:url" content="http://yoursite.com/2018/03/02/c++3/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/2.jpg">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/1.jpg">
-<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/1.jpg">
-<meta property="og:updated_time" content="2019-03-31T12:47:04.566Z">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/3.jpg">
+<meta property="og:updated_time" content="2019-03-31T12:52:50.724Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="c++中const关键字总结">
+<meta name="twitter:title" content="stl简介">
 <meta name="twitter:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
 <meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/stl/2.jpg">
   
@@ -189,7 +189,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      c++中const关键字总结
+      stl简介
     </h1>
   
 
@@ -227,7 +227,7 @@ var _hmt = _hmt || [];
 第三类通常不推荐使用，所以我们不用考虑，可以认为它的功能与第一类文件一样（实际有区别）。</p>
 <h3 id="stl文件包含关系"><a class="markdownIt-Anchor" href="#stl文件包含关系"></a> STL文件包含关系</h3>
 <p>这是部分STL文件的包含关系：</p>
-<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/3.jpg" alt=""></p>
 <h3 id="空间配置器allocator"><a class="markdownIt-Anchor" href="#空间配置器allocator"></a> 空间配置器(allocator)</h3>
 <p>图中左上角为空间配置器，通常我们可以在代码中用&quot;#include <memory>&quot;来包含它，它的实际实现在三个文件中：</memory></p>
 <p>stl_construct.h: 对象的构造和析构</p>
@@ -240,7 +240,7 @@ var _hmt = _hmt || [];
 <p>你会发现，序列容器queue和序列容器stack对应了不止一个文件stl_XXX.h文件，这是因为它们是一种配接器，是基于其他容器实现的。</p>
 <p>关联容器中，set和map，即集合与映射，set和map的底层基于红黑树实现（stl_tree.h文件），查询时间复杂度为O(log(n))，空间复杂度为O(n)。</p>
 <p>hash_set和hash_map的底层基于哈希表实现（stl_hashtable.h文件），查询时间复杂度为O(1)，空间复杂度比set和map高。</p>
-<p>####算法(algorithm)</p>
+<h4 id="算法algorithm"><a class="markdownIt-Anchor" href="#算法algorithm"></a> 算法(algorithm)</h4>
 <p>大多数容器或多或少包含了算法文件，这是因为许多容器内部的实现会用到一些基本算法。</p>
 <p>通常我们用&quot;#include <algorithm>&quot;来使用STL内部的算法，其背后的实现在stl_algobase.h（基本算法）和stl_algo.h（其他算法）。</algorithm></p>
 <p>numeric为数值型算法。</p>
@@ -350,17 +350,17 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2018/06/01/ml1/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/04/02/c++4/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          特征工程
+          stl空间配置器(allocator)
         
       </div>
     </a>
   
   
-    <a href="/2018/03/02/c++4/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">c++中const关键字总结</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -388,7 +388,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#stl简介"><span class="toc-number">1.</span> <span class="toc-text"> STL简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl组件"><span class="toc-number">2.</span> <span class="toc-text"> STL组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件概览"><span class="toc-number">3.</span> <span class="toc-text"> STL文件概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件包含关系"><span class="toc-number">4.</span> <span class="toc-text"> STL文件包含关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空间配置器allocator"><span class="toc-number">5.</span> <span class="toc-text"> 空间配置器(allocator)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#容器container"><span class="toc-number">5.1.</span> <span class="toc-text"> 容器(container)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#迭代器iterator"><span class="toc-number">5.2.</span> <span class="toc-text"> 迭代器(iterator)</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#stl简介"><span class="toc-number">1.</span> <span class="toc-text"> STL简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl组件"><span class="toc-number">2.</span> <span class="toc-text"> STL组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件概览"><span class="toc-number">3.</span> <span class="toc-text"> STL文件概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件包含关系"><span class="toc-number">4.</span> <span class="toc-text"> STL文件包含关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空间配置器allocator"><span class="toc-number">5.</span> <span class="toc-text"> 空间配置器(allocator)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#容器container"><span class="toc-number">5.1.</span> <span class="toc-text"> 容器(container)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#算法algorithm"><span class="toc-number">5.2.</span> <span class="toc-text"> 算法(algorithm)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#迭代器iterator"><span class="toc-number">5.3.</span> <span class="toc-text"> 迭代器(iterator)</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -541,6 +541,18 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -557,23 +569,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">

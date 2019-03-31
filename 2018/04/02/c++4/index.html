@@ -6,17 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>c++中const关键字总结 | Hexo</title>
+  <title>stl空间配置器(allocator) | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="C++,后台开发,STL">
+  <meta name="description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
+<meta name="keywords" content="C++,后台开发,STL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="c++中const关键字总结">
-<meta property="og:url" content="http://yoursite.com/2018/03/02/c++4/index.html">
+<meta property="og:title" content="stl空间配置器(allocator)">
+<meta property="og:url" content="http://yoursite.com/2018/04/02/c++4/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-31T12:43:50.534Z">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/4.jpg">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/5.jpg">
+<meta property="og:updated_time" content="2019-03-31T13:05:13.118Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="c++中const关键字总结">
+<meta name="twitter:title" content="stl空间配置器(allocator)">
+<meta name="twitter:description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
+<meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/stl/4.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -182,20 +188,239 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      c++中const关键字总结
+      stl空间配置器(allocator)
     </h1>
   
 
         
-        <a href="/2018/03/02/c++4/" class="archive-article-date">
-  	<time datetime="2018-03-02T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
+        <a href="/2018/04/02/c++4/" class="archive-article-date">
+  	<time datetime="2018-04-02T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-02</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="allocator-简述"><a class="markdownIt-Anchor" href="#allocator-简述"></a> allocator 简述</h3>
+<p>以vector为例，通常我们这样使用STL的容器：</p>
+<pre><code>#include &lt;vector&gt;
+int main()
+{
+    std::vector&lt;int&gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre>
+<p>allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vector）身后，默默完成内存配置与释放，对象构造和析构的工作。</p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/4.jpg" alt=""></p>
+<p>图中左边是用户代码，右边是STL内部。</p>
+<p>从用户代码<strong>std::vector<int> v</int></strong>;开始，<strong>vector</strong>的模板参数<strong>class T</strong>被替换为<strong>int</strong>，同时第二个模板参数因为没有指定，所以为默认模板参数，即<strong>allocator<int></int></strong>，这个vector对象v会在内部实例一个**allocator<int>**的对象，用来管理内存。</int></p>
+<p>你注意到了，为什么allocator也需要接收这个模板参数T，管理内存应该不需要知道T的具体类型（int）吧？</p>
+<p>前面说了，allocator除了负责内存的分配和释放，还负责对象的构造和析构，知道类型才能调用对象的构造和析构函数。而且，对于分配内存，allocator接口设计中有类似于“为n个T类型的对象分配内存”这种批量操作，这就需要知道类型才能算出对象需要的空间了。</p>
+<p>你也注意到，容器vector的第二个参数有默认值，那么我们也可以为其指定一个其他的值？也就是说，我们自己按照STL标准实现一个allocator，就可以搭配STL里的容器使用了？</p>
+<p>确实是的，假设我们自己写了一个allocator，叫做my_alloc，就可以指定它来为vector分配空间：</p>
+<pre><code>#include &lt;vector&gt;
+template &lt;class T&gt;
+class my_alloc{
+// ...
+// 自己实现的空间分配器
+// ···
+};
+
+int main()
+{
+    std::vector&lt;int, my_alloc&lt;int&gt; &gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre>
+<h3 id="allocator-标准接口"><a class="markdownIt-Anchor" href="#allocator-标准接口"></a> allocator 标准接口</h3>
+<p>STL是一个标准，只对接口进行规范，接口背后的实现可以有不同版本，所以目前流行的STL如Visual C++采用的P. J. Plauger 版本，GCC编译器采用的SGI STL版本等都是常见的STL。SGI STL是最流行的版本，我们主要关注SGI STL的allocator实现。</p>
+<p>这是STL标准要求的allocator必要接口：</p>
+<pre><code>// 以下几种自定义类型是一种type_traits技巧，暂时不需要了解
+allocator::value_type
+allocator::pointer
+allocator::const_pointer
+allocator::reference
+allocator::const_reference
+allocator::size_type
+allocator::difference
+
+// 一个嵌套的(nested)class template，class rebind&lt;U&gt;拥有唯一成员other，那是一个typedef，代表allocator&lt;U&gt;
+allocator::rebind
+
+allocator::allocator() // 默认构造函数
+allocator::allocator(const allocator&amp;) // 拷贝构造函数
+template &lt;class U&gt;allocator::allocator(const allocator&lt;U&gt;&amp;) // 泛化的拷贝构造函数
+allocator::~allocator() // 析构函数
+
+// 返回某个对象的地址，a.address(x)等同于&amp;x
+pointer allocator::address(reference x) const
+// 返回某个const对象的地址，a.address(x)等同于&amp;x
+const_pointer allocator::address(const_reference x) const
+
+// 配置空间，足以存储n个T对象。第二个参数是个提示。实现上可能会利用它来增进区域性(locality)，或完全忽略之
+pointer allocator::allocate(size_type n, const void* = 0)
+// 释放先前配置的空间
+void allocator::deallocate(pointer p, size_type n)
+
+// 返回可成功配置的最大量
+size_type allocator:maxsize() const
+
+// 调用对象的构造函数，等同于 new((void*)p) T(x)
+void allocator::construct(pointer p, const T&amp; x)
+// 调用对象的析构函数，等同于 p-&gt;~T()
+void allocator::destroy(pointer p)
+</code></pre>
+<p>上面的标准接口实际只需要关注最后的<strong>allocate</strong>，<strong>deallocate</strong>，<strong>construct</strong>和<strong>destroy</strong>函数的实现即可。整个allocator最重要的函数就是这四个。从功能上，这四者可以简单理解为C++的**::operator new<strong>和</strong>::operator delete**，构造函数和析构函数，实际上，一个最简单的allocator就可以理解为对new，delete的简单封装,以及对构造函数和析构函数的直接调用。</p>
+<p>以下是书中给出的一个最简单的allocator实现，它是符合STL标准的。</p>
+<pre><code>#ifndef _MYALLOC_
+#define _MYALLOC_
+
+#include &lt;new&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdlib&gt;
+#include &lt;climits&gt;
+#include &lt;iostream&gt;
+
+namespace my_alloc
+{
+    // allocate的实际实现，简单封装new，当无法获得内存时，报错并退出
+    template &lt;class T&gt;
+    inline T* _allocate(ptrdiff_t size, T*) {
+        set_new_handler(0);
+        T* tmp = (T*)(::operator new((size_t)(size * sizeof(T))));
+        if (tmp == 0) {
+            cerr &lt;&lt; &quot;out of memory&quot; &lt;&lt; endl;
+            exit(1);
+        }
+        return tmp;
+    }
+
+    // deallocate的实际实现，简单封装delete
+    template &lt;class T&gt;
+    inline void _deallocate(T* buffer) { ::operator delete(buffer); }
+
+    // construct的实际实现，直接调用对象的构造函数
+    template &lt;class T1, class T2&gt;
+    inline void _construct(T1* p, const T2&amp; value) { new(p) T1(value); }
+
+    // destroy的实际实现，直接调用对象的析构函数
+    template &lt;class T&gt;
+    inline void _destroy(T* ptr) { ptr-&gt;~T(); }
+
+    template &lt;class T&gt;
+    class allocator {
+    public:
+        typedef T           value_type;
+        typedef T*          pointer;
+        typedef const T*    const_pointer;
+        typedef T&amp;          reference;
+        typedef const T&amp;    const_reference;
+        typedef size_t      size_type;
+        typedef ptrdiff_t   difference_type;
+
+        // 构造函数
+        allocator(){ return; }
+        template &lt;class U&gt;
+        allocator(const allocator&lt;U&gt;&amp; c){}
+
+        // rebind allocator of type U
+        template &lt;class U&gt;
+        struct rebind { typedef allocator&lt;U&gt; other; };
+
+        // allocate，deallocate，construct和destroy函数均调用上面的实际实现
+        // hint used for locality. ref.[Austern],p189
+        pointer allocate(size_type n, const void* hint = 0) {
+            return _allocate((difference_type)n, (pointer)0);
+        }
+        void deallocate(pointer p, size_type n) { _deallocate(p); }
+        void construct(pointer p, const T&amp; value) { _construct(p, value); }
+        void destroy(pointer p) { _destroy(p); }
+
+        pointer address(reference x) { return (pointer)&amp;x; }
+        const_pointer const_address(const_reference x) { return (const_pointer)&amp;x; }
+
+        size_type max_size() const { return size_type(UINT_MAX / sizeof(T)); }   
+    };
+} // end of namespace myalloc
+
+#endif // _MYALLOC_
+</code></pre>
+<p>现在，我们可以使用自己编写的allocator来为vector分配空间：</p>
+<pre><code>#include &lt;vector&gt;
+int main()
+{
+    std::vector&lt;int, my_alloc::allocator&lt;int&gt; &gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre>
+<p><em><strong>然而，这样并不能通过编译（如果你使用的是GCC编译器），因为SGI STL的allocator并不完全符合STL规范，我们编写的符合规范的自然不能搭配使用，SGI STL版本的allocator具体实现在下文阐述。</strong></em></p>
+<h3 id="sgi-stl-标准配置器stdallocator"><a class="markdownIt-Anchor" href="#sgi-stl-标准配置器stdallocator"></a> SGI STL 标准配置器(std::allocator)</h3>
+<pre><code>#ifnedf DEFALLOC_H
+#define DEFALLOC_H
+
+#include &lt;new.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;iostream.h&gt;
+#include &lt;algobase.h&gt;
+
+template &lt;class T&gt;
+inline T* allocate(ptrdiff_t size, T*) {
+    set_new_handler(0);
+    T* tmp = (T*)(::operator new((size_t)(size * sizeof(T))));
+    if (tmp == 0) {
+        cerr &lt;&lt; &quot;out of memory&quot; &lt;&lt; endl;
+        exit(1);
+    }
+    return tmp;
+}
+
+template &lt;class T&gt;
+inline void deallocate(T* buffer) {
+    ::operator delete(buffer);
+}
+
+template &lt;class T&gt;
+class allocator {
+public:
+    typedef T value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T&amp; reference;
+    typedef const T&amp; const_reference;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+
+    pointer allocate(size_type n) { return ::allocate((difference_type)n, (pointer)0); }
+    void deallocate(pointer p) { ::deallocator(p); }
+    pointer address(reference x) { return (pointer)&amp;x; }
+    const_pointer const_address(const_reference x) { return (const_pointer)&amp;x; }
+    size_type init_page_size() {
+        return max(size_type(1), size_type(UINT_MAX/sizeof(T)));
+    }
+};
+
+class allocator&lt;void&gt; {
+public:
+    typedef void* pointer;
+}
+</code></pre>
+<h3 id="sgi-stl-特殊配置器stdalloc"><a class="markdownIt-Anchor" href="#sgi-stl-特殊配置器stdalloc"></a> SGI STL 特殊配置器(std::alloc)</h3>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/5.jpg" alt=""></p>
+<p>我们可以看到，用户代码实例化一个vector对象，vector对象调用alloc的接口，注意，不同于之前标准的allocator，这里不需要实例化一个空间配置器，只需要调用alloc的静态函数就行了。</p>
+<p>std::alloc的接口与标准非常相似：</p>
+<pre><code>static T* allocate()函数负责空间配置，返回一个T对象大小的空间。
+static T* allocate(size_t)函数负责批量空间配置。
+static void deallocate(T*)函数负责空间释放。
+static void deallocate(T*,size_t)函数负责批量空间释放。
+</code></pre>
+<p>在接口之下，我们看到还有两级配置器，上面的接口根据情况调用这两个配置器，第二级配置器实现了内存池和自由链表，当程序多次进行小空间的配置时，可以从内存池和自由链表中获取空间，减少系统调用，提升性能。当进行大空间的配置时，上面的接口直接调用第一级配置器。最终，它们都是用malloc()和free()来配置和释放空间。</p>
+<p>这样看起来std::alloc的结构还算清晰，但是实际实现还会出现多种边界情况，比如，当系统调用malloc()空间不足时，我们需要让第一级配置器来处理，这可能涉及从第二级配置器中回收已经缓存但还未使用的空间，事情就变得繁琐了。</p>
+
       
 
       
@@ -283,7 +508,7 @@ var _hmt = _hmt || [];
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/03/02/c++4/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/04/02/c++4/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -297,18 +522,18 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2018/03/02/c++3/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/01/ml1/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          c++中const关键字总结
+          特征工程
         
       </div>
     </a>
   
   
-    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">c++中const关键字总结</div>
+    <a href="/2018/03/02/c++3/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">stl简介</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -335,7 +560,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-简述"><span class="toc-number">1.</span> <span class="toc-text"> allocator 简述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-标准接口"><span class="toc-number">2.</span> <span class="toc-text"> allocator 标准接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sgi-stl-标准配置器stdallocator"><span class="toc-number">3.</span> <span class="toc-text"> SGI STL 标准配置器(std::allocator)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sgi-stl-特殊配置器stdalloc"><span class="toc-number">4.</span> <span class="toc-text"> SGI STL 特殊配置器(std::alloc)</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -488,6 +713,18 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -504,23 +741,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">

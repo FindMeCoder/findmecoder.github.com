@@ -175,6 +175,53 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-c++5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/03/31/c++5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-lc8" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
@@ -378,6 +425,438 @@ You may assume no duplicate exists in the array.</p>
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/07/03/lc7/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc2" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc2/">Remove Duplicates from Sorted Array</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc2/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
+(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
+You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
+You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>二分查找，难度主要在于左右边界的确定。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
+<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
+<pre><code>class Solution {
+public:
+	int search(int A[], int n, int target) {
+		int first = 0, last = n;
+		while (first != last) {
+			const int mid = (first + last) / 2;
+			if (A[mid] == target)
+				return mid;
+			if (A[first] &lt;= A[mid]) {
+				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+					last = mid;
+				else	
+					first = mid + 1;
+			} 
+			else {
+			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+					first = mid + 1;
+				else
+					last = mid;
+			}
+		}
+		return -1;
+	}
+};
+</code></pre>
+<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
+<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
+<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
+Would this affect the run-time complexity? How and why?<br>
+Write a function to determine if a given target is in the array.</p>
+<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
+<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
+如 [1,3,1,1,1]。<br>
+如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
+<p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
+<p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
+<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
+<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
+<pre><code>class Solution {
+public:
+	bool search(int A[], int n, int target) {
+		int first = 0, last = n;
+		while (first != last) {
+			const int mid = (first + last) / 2;
+				if (A[mid] == target)
+					return true;
+				if (A[first] &lt; A[mid]) {
+				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+					last = mid;
+				else
+					first = mid + 1;
+				} else if (A[first] &gt; A[mid]) {
+				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+					first = mid + 1;
+				else
+					last = mid;
+			} else
+
+			first++;
+		}
+		return false;
+	}
+};</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc5/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-lc3" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc3/">Remove Duplicates from Sorted Array</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc3/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>LeetCode 上二叉树的节点定义如下：</p>
+<pre><code>struct TreeNode {
+	int val;
+	TreeNode *left;
+	TreeNode *right;
+	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
+};
+</code></pre>
+<h2 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h2>
+<p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
+<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>
+与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
+<p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
+<p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
+<h2 id="binary-tree-preorder-traversal"><a class="markdownIt-Anchor" href="#binary-tree-preorder-traversal"></a> Binary Tree Preorder Traversal</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>用栈或者 Morris 遍历。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
+<p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		const TreeNode *p;
+		stack&lt;const TreeNode *&gt; s;
+		p = root;
+		if (p != nullptr) s.push(p);
+		while (!s.empty()) {
+			p = s.top();
+			s.pop();
+			result.push_back(p-&gt;val);
+			if (p-&gt;right != nullptr) s.push(p-&gt;right);
+			if (p-&gt;left != nullptr) s.push(p-&gt;left);
+		}
+		return result;
+	}
+};
+</code></pre>
+<p><strong>Morris 先序遍历</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		TreeNode *cur, *prev;
+		cur = root;
+		while (cur != nullptr) {
+			if (cur-&gt;left == nullptr) {
+				result.push_back(cur-&gt;val);
+				prev = cur; /* cur 刚刚被访问过 */
+				cur = cur-&gt;right;
+				} else {
+				/* 查找前驱 */
+				TreeNode *node = cur-&gt;left;
+				while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
+					node = node-&gt;right;
+				if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
+					result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
+					node-&gt;right = cur;
+					prev = cur; /* cur 刚刚被访问过 */
+					cur = cur-&gt;left;
+				} else { /* 已经线索化，则删除线索 */
+					node-&gt;right = nullptr;
+					/* prev = cur; 不能有这句，cur 已经被访问 */
+					cur = cur-&gt;right;
+				}
+			}
+		}
+		return result;
+	}
+};
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">递归</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc3/">展开全文 >></a>
         </p>
       
 
@@ -654,438 +1133,6 @@ public:
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/06/03/lc4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lc2" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/lc2/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/03/lc2/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-		return -1;
-	}
-};
-</code></pre>
-<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
-Would this affect the run-time complexity? How and why?<br>
-Write a function to determine if a given target is in the array.</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
-如 [1,3,1,1,1]。<br>
-如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
-<p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
-<p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
-<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	bool search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-				if (A[mid] == target)
-					return true;
-				if (A[first] &lt; A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else
-					first = mid + 1;
-				} else if (A[first] &gt; A[mid]) {
-				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			} else
-
-			first++;
-		}
-		return false;
-	}
-};</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/lc2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lc3" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/lc3/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/03/lc3/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>LeetCode 上二叉树的节点定义如下：</p>
-<pre><code>struct TreeNode {
-	int val;
-	TreeNode *left;
-	TreeNode *right;
-	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
-};
-</code></pre>
-<h2 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h2>
-<p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
-<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>
-与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
-<p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
-<p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
-<h2 id="binary-tree-preorder-traversal"><a class="markdownIt-Anchor" href="#binary-tree-preorder-traversal"></a> Binary Tree Preorder Traversal</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>用栈或者 Morris 遍历。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
-<pre><code>class Solution {
-public:
-	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-		vector&lt;int&gt; result;
-		const TreeNode *p;
-		stack&lt;const TreeNode *&gt; s;
-		p = root;
-		if (p != nullptr) s.push(p);
-		while (!s.empty()) {
-			p = s.top();
-			s.pop();
-			result.push_back(p-&gt;val);
-			if (p-&gt;right != nullptr) s.push(p-&gt;right);
-			if (p-&gt;left != nullptr) s.push(p-&gt;left);
-		}
-		return result;
-	}
-};
-</code></pre>
-<p><strong>Morris 先序遍历</strong></p>
-<pre><code>class Solution {
-public:
-	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-		vector&lt;int&gt; result;
-		TreeNode *cur, *prev;
-		cur = root;
-		while (cur != nullptr) {
-			if (cur-&gt;left == nullptr) {
-				result.push_back(cur-&gt;val);
-				prev = cur; /* cur 刚刚被访问过 */
-				cur = cur-&gt;right;
-				} else {
-				/* 查找前驱 */
-				TreeNode *node = cur-&gt;left;
-				while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
-					node = node-&gt;right;
-				if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
-					result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
-					node-&gt;right = cur;
-					prev = cur; /* cur 刚刚被访问过 */
-					cur = cur-&gt;left;
-				} else { /* 已经线索化，则删除线索 */
-					node-&gt;right = nullptr;
-					/* prev = cur; 不能有这句，cur 已经被访问 */
-					cur = cur-&gt;right;
-				}
-			}
-		}
-		return result;
-	}
-};
-</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">递归</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/lc3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/03/lc5/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
         </p>
       
 
@@ -1478,144 +1525,6 @@ public:
 
 
   
-    <article id="post-c++3" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/02/c++3/">c++中const关键字总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/03/02/c++3/" class="archive-article-date">
-  	<time datetime="2018-03-02T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。</p>
-<h3 id="stl简介"><a class="markdownIt-Anchor" href="#stl简介"></a> STL简介</h3>
-<p>STL版本</p>
-<p>STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。</p>
-<p>SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。</p>
-<p>注意，SGI STL并不是原封不动的被用于GCC，所以在GCC中使用STL可能会和SGI STL有一些微小的区别。</p>
-<h3 id="stl组件"><a class="markdownIt-Anchor" href="#stl组件"></a> STL组件</h3>
-<p>STL分为六大组件：</p>
-<p><em><strong>容器</strong></em>(container)：常用数据结构，大致分为两类，序列容器，如vector，list，deque，关联容器，如set，map。在实现上，是类模板(class template)</p>
-<p><em><strong>迭代器</strong></em>(iterator)：一套访问容器的接口，行为类似于指针。它为不同算法提供的相对统一的容器访问方式，使得设计算法时无需关注过多关注数据。（“算法”指广义的算法，操作数据的逻辑代码都可认为是算法）。</p>
-<p><em><strong>算法</strong></em>(algorithm)：提供一套常用的算法，如sort，search，copy，erase … 在实现上，可以认为是一种函数模板(function template)。</p>
-<p><em><strong>配置器</strong></em>(allocator)：为容器提供空间配置和释放，对象构造和析构的服务，也是一个class template。<br>
-仿函数(functor)：作为函数使用的对象，用于泛化算法中的操作。</p>
-<p><em><strong>配接器</strong></em>(adapter)：将一种容器修饰为功能不同的另一种容器，如以容器vector为基础，在其上实现stack，stack的行为也是一种容器。这就是一种配接器。除此之外，还有迭代器配接器和仿函数配接器。</p>
-<h3 id="stl文件概览"><a class="markdownIt-Anchor" href="#stl文件概览"></a> STL文件概览</h3>
-<p>这是SGI STL(V3.3)的所有文件：</p>
-<p><img src="https://findmecoder.github.io/blog-pic/stl/2.jpg" alt=""></p>
-<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
-<p>大约可以将文件分三类：</p>
-<p>STL标准头文件（无文件后缀），如vector, deque, list, map, algorithm, functional</p>
-<p>SGI STL内部文件（STL的真正实现），如stl_vector.h, stl_deque.h, stl_list.h, stl_map.h, stl_algo.h, stl_function.h</p>
-<p>HP规范的头文件，如vector.h, deque.h, list.h, map.h, algo.h, function.h<br>
-第三类通常不推荐使用，所以我们不用考虑，可以认为它的功能与第一类文件一样（实际有区别）。</p>
-<h3 id="stl文件包含关系"><a class="markdownIt-Anchor" href="#stl文件包含关系"></a> STL文件包含关系</h3>
-<p>这是部分STL文件的包含关系：</p>
-<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
-<h3 id="空间配置器allocator"><a class="markdownIt-Anchor" href="#空间配置器allocator"></a> 空间配置器(allocator)</h3>
-<p>图中左上角为空间配置器，通常我们可以在代码中用&quot;#include <memory>&quot;来包含它，它的实际实现在三个文件中：</memory></p>
-<p>stl_construct.h: 对象的构造和析构</p>
-<p>stl_alloc.h: 空间的配置和释放</p>
-<p>stl_uninitialized.h: 内存基本工具，用于提升性能</p>
-<p>注意看所有蓝色箭头，所有的容器都直接或间接的包含了allocator，说明所有的容器都依赖allocator来管理空间。</p>
-<h4 id="容器container"><a class="markdownIt-Anchor" href="#容器container"></a> 容器(container)</h4>
-<p>图中不带后缀的文件就是标准头文件，比如vector；图中带后缀的就是标准头文件对应的实现文件，如stl_vector.h；容器vector的真正实现在stl_vector.h中。可以看到，大多数文件都有对应的关系：deque对应stl_queue.h，stack对应stl_stack …</p>
-<p>容器大致分为序列容器和关联容器，序列容器即逻辑上是序列化访问的容器，关联容器即通过键值对访问的容器。</p>
-<p>你会发现，序列容器queue和序列容器stack对应了不止一个文件stl_XXX.h文件，这是因为它们是一种配接器，是基于其他容器实现的。</p>
-<p>关联容器中，set和map，即集合与映射，set和map的底层基于红黑树实现（stl_tree.h文件），查询时间复杂度为O(log(n))，空间复杂度为O(n)。</p>
-<p>hash_set和hash_map的底层基于哈希表实现（stl_hashtable.h文件），查询时间复杂度为O(1)，空间复杂度比set和map高。</p>
-<p>####算法(algorithm)</p>
-<p>大多数容器或多或少包含了算法文件，这是因为许多容器内部的实现会用到一些基本算法。</p>
-<p>通常我们用&quot;#include <algorithm>&quot;来使用STL内部的算法，其背后的实现在stl_algobase.h（基本算法）和stl_algo.h（其他算法）。</algorithm></p>
-<p>numeric为数值型算法。</p>
-<h4 id="迭代器iterator"><a class="markdownIt-Anchor" href="#迭代器iterator"></a> 迭代器(iterator)</h4>
-<p>你肯定会问迭代器去哪儿了。</p>
-<p>在STL中，迭代器不是单独实现的（虽然有iterator头文件，但他只是用于实现一些特殊的迭代器），迭代器向用户和算法提供统一的数据访问方式，理应集中实现。但是各种容器千差万别，迭代器的内部实现对容器依赖较强，所以迭代器由每个容器自身包含并实现，对外开放统一的接口。</p>
-<p>所以迭代器的实现不会存在于单独的文件中。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">STL</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/03/02/c++3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1734,6 +1643,18 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -1750,23 +1671,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">

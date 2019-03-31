@@ -6,20 +6,16 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Longest Consecutive Sequence | Hexo</title>
+  <title>Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="描述 Given an unsorted array of integers, find the length of the longest consecutive elements sequence. For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3,">
-<meta name="keywords" content="LeetCode,数组,算法">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Longest Consecutive Sequence">
-<meta property="og:url" content="http://yoursite.com/2018/07/03/lc7/index.html">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/2019/03/31/c++5/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="描述 Given an unsorted array of integers, find the length of the longest consecutive elements sequence. For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3,">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-29T10:30:49.631Z">
+<meta property="og:updated_time" content="2019-03-31T13:05:33.981Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Longest Consecutive Sequence">
-<meta name="twitter:description" content="描述 Given an unsorted array of integers, find the length of the longest consecutive elements sequence. For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3,">
+<meta name="twitter:title" content="Hexo">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -178,59 +174,12 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-lc7" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-c++5" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Longest Consecutive Sequence
-    </h1>
-  
-
-        
-        <a href="/2018/07/03/lc7/" class="archive-article-date">
-  	<time datetime="2018-07-03T13:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-03</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given an unsorted array of integers, find the length of the longest consecutive elements sequence.<br>
-For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3, 4]. Return its length: 4.<br>
-Your algorithm should run in O(n) complexity<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>如果允许 O(n log n) 的复杂度，那么可以先排序，可是本题要求 O(n)。由于序列里的元素是无序的，又要求 O(n)，首先要想到用哈希表。用一个哈希表 unordered_map&lt;int, bool&gt; used 记录每个元素是否使用，对每个元素，以该元素为中心，往左右扩张，直到不连续为止，记录下最长的长度</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<pre><code>int longestConsecutive(const vector&lt;int&gt; &amp;num){
-	unordered_map&lt;int, bool&gt; used;
-	for (auto i : num)
-		used[i] = false;
-	int longest = 0;
-	for (auto i : num)
-	{
-		if (used[i])
-			continue;
-		used[i] = true;
-		int length = 1;
-		for (int j = i + 1; used.find(j) != used.end; j++){
-			used[j] = true;
-			++length;
-		}
-		for (int j = i - 1; used.find(j) != used.end(); j--){
-			used[j] = true;
-			+length;
-		}
-		longest = max(length, longest);
-	}
-	return longest;
-}
-</code></pre>
-
+        
       
 
       
@@ -238,37 +187,7 @@ You may assume no duplicate exists in the array.</p>
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
 
       
 
@@ -318,7 +237,7 @@ You may assume no duplicate exists in the array.</p>
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/07/03/lc7/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2019/03/31/c++5/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -332,18 +251,9 @@ You may assume no duplicate exists in the array.</p>
   
 <nav id="article-nav">
   
-    <a href="/2018/09/03/lc8/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Two Sum
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/06/03/lc2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Remove Duplicates from Sorted Array</div>
+    <a href="/2018/09/03/lc8/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Two Sum</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -370,7 +280,7 @@ You may assume no duplicate exists in the array.</p>
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">3.</span> <span class="toc-text"> 代码</span></a></li></ol>
+                    目录，不存在的…
                     </div>
                 </span>
             </div>
