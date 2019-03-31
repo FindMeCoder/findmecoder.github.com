@@ -8,15 +8,21 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>c++中const关键字总结 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="C++,后台开发,STL">
+  <meta name="description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
+<meta name="keywords" content="C++,后台开发,STL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="c++中const关键字总结">
 <meta property="og:url" content="http://yoursite.com/2018/03/02/c++3/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-30T02:13:45.844Z">
+<meta property="og:image" content="https://github.com/FindMeCoder/blog-pic/blob/master/stl/1.jpg">
+<meta property="og:image" content="https://github.com/FindMeCoder/blog-pic/blob/master/stl/3.jpg">
+<meta property="og:updated_time" content="2019-03-31T12:36:39.677Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="c++中const关键字总结">
+<meta name="twitter:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
+<meta name="twitter:image" content="https://github.com/FindMeCoder/blog-pic/blob/master/stl/1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -195,7 +201,53 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。</p>
+<h3 id="stl简介"><a class="markdownIt-Anchor" href="#stl简介"></a> STL简介</h3>
+<p>STL版本</p>
+<p>STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。</p>
+<p>SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。</p>
+<p>注意，SGI STL并不是原封不动的被用于GCC，所以在GCC中使用STL可能会和SGI STL有一些微小的区别。</p>
+<h3 id="stl组件"><a class="markdownIt-Anchor" href="#stl组件"></a> STL组件</h3>
+<p>STL分为六大组件：</p>
+<p><em><strong>容器</strong></em>(container)：常用数据结构，大致分为两类，序列容器，如vector，list，deque，关联容器，如set，map。在实现上，是类模板(class template)</p>
+<p><em><strong>迭代器</strong></em>(iterator)：一套访问容器的接口，行为类似于指针。它为不同算法提供的相对统一的容器访问方式，使得设计算法时无需关注过多关注数据。（“算法”指广义的算法，操作数据的逻辑代码都可认为是算法）。</p>
+<p><em><strong>算法</strong></em>(algorithm)：提供一套常用的算法，如sort，search，copy，erase … 在实现上，可以认为是一种函数模板(function template)。</p>
+<p><em><strong>配置器</strong></em>(allocator)：为容器提供空间配置和释放，对象构造和析构的服务，也是一个class template。<br>
+仿函数(functor)：作为函数使用的对象，用于泛化算法中的操作。</p>
+<p><em><strong>配接器</strong></em>(adapter)：将一种容器修饰为功能不同的另一种容器，如以容器vector为基础，在其上实现stack，stack的行为也是一种容器。这就是一种配接器。除此之外，还有迭代器配接器和仿函数配接器。</p>
+<h3 id="stl文件概览"><a class="markdownIt-Anchor" href="#stl文件概览"></a> STL文件概览</h3>
+<p>这是SGI STL(V3.3)的所有文件：</p>
+<p>！<a href="https://github.com/FindMeCoder/blog-pic/blob/master/stl/2.jpg" target="_blank" rel="noopener"></a></p>
+<p><img src="https://github.com/FindMeCoder/blog-pic/blob/master/stl/1.jpg" alt=""></p>
+<p>大约可以将文件分三类：</p>
+<p>STL标准头文件（无文件后缀），如vector, deque, list, map, algorithm, functional</p>
+<p>SGI STL内部文件（STL的真正实现），如stl_vector.h, stl_deque.h, stl_list.h, stl_map.h, stl_algo.h, stl_function.h</p>
+<p>HP规范的头文件，如vector.h, deque.h, list.h, map.h, algo.h, function.h<br>
+第三类通常不推荐使用，所以我们不用考虑，可以认为它的功能与第一类文件一样（实际有区别）。</p>
+<h3 id="stl文件包含关系"><a class="markdownIt-Anchor" href="#stl文件包含关系"></a> STL文件包含关系</h3>
+<p>这是部分STL文件的包含关系：</p>
+<p><img src="https://github.com/FindMeCoder/blog-pic/blob/master/stl/3.jpg" alt=""></p>
+<h3 id="空间配置器allocator"><a class="markdownIt-Anchor" href="#空间配置器allocator"></a> 空间配置器(allocator)</h3>
+<p>图中左上角为空间配置器，通常我们可以在代码中用&quot;#include <memory>&quot;来包含它，它的实际实现在三个文件中：</memory></p>
+<p>stl_construct.h: 对象的构造和析构</p>
+<p>stl_alloc.h: 空间的配置和释放</p>
+<p>stl_uninitialized.h: 内存基本工具，用于提升性能</p>
+<p>注意看所有蓝色箭头，所有的容器都直接或间接的包含了allocator，说明所有的容器都依赖allocator来管理空间。</p>
+<h4 id="容器container"><a class="markdownIt-Anchor" href="#容器container"></a> 容器(container)</h4>
+<p>图中不带后缀的文件就是标准头文件，比如vector；图中带后缀的就是标准头文件对应的实现文件，如stl_vector.h；容器vector的真正实现在stl_vector.h中。可以看到，大多数文件都有对应的关系：deque对应stl_queue.h，stack对应stl_stack …</p>
+<p>容器大致分为序列容器和关联容器，序列容器即逻辑上是序列化访问的容器，关联容器即通过键值对访问的容器。</p>
+<p>你会发现，序列容器queue和序列容器stack对应了不止一个文件stl_XXX.h文件，这是因为它们是一种配接器，是基于其他容器实现的。</p>
+<p>关联容器中，set和map，即集合与映射，set和map的底层基于红黑树实现（stl_tree.h文件），查询时间复杂度为O(log(n))，空间复杂度为O(n)。</p>
+<p>hash_set和hash_map的底层基于哈希表实现（stl_hashtable.h文件），查询时间复杂度为O(1)，空间复杂度比set和map高。</p>
+<p>####算法(algorithm)</p>
+<p>大多数容器或多或少包含了算法文件，这是因为许多容器内部的实现会用到一些基本算法。</p>
+<p>通常我们用&quot;#include <algorithm>&quot;来使用STL内部的算法，其背后的实现在stl_algobase.h（基本算法）和stl_algo.h（其他算法）。</algorithm></p>
+<p>numeric为数值型算法。</p>
+<h4 id="迭代器iterator"><a class="markdownIt-Anchor" href="#迭代器iterator"></a> 迭代器(iterator)</h4>
+<p>你肯定会问迭代器去哪儿了。</p>
+<p>在STL中，迭代器不是单独实现的（虽然有iterator头文件，但他只是用于实现一些特殊的迭代器），迭代器向用户和算法提供统一的数据访问方式，理应集中实现。但是各种容器千差万别，迭代器的内部实现对容器依赖较强，所以迭代器由每个容器自身包含并实现，对外开放统一的接口。</p>
+<p>所以迭代器的实现不会存在于单独的文件中。</p>
+
       
 
       
@@ -297,18 +349,18 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2018/03/02/c++2/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/01/ml1/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          c++中const关键字总结
+          特征工程
         
       </div>
     </a>
   
   
-    <a href="/2018/03/02/c++1/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">为什么epoll是线程安全？</div>
+    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">c++中const关键字总结</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -335,7 +387,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#stl简介"><span class="toc-number">1.</span> <span class="toc-text"> STL简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl组件"><span class="toc-number">2.</span> <span class="toc-text"> STL组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件概览"><span class="toc-number">3.</span> <span class="toc-text"> STL文件概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stl文件包含关系"><span class="toc-number">4.</span> <span class="toc-text"> STL文件包含关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空间配置器allocator"><span class="toc-number">5.</span> <span class="toc-text"> 空间配置器(allocator)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#容器container"><span class="toc-number">5.1.</span> <span class="toc-text"> 容器(container)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#迭代器iterator"><span class="toc-number">5.2.</span> <span class="toc-text"> 迭代器(iterator)</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -496,6 +548,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
               </li>
              
@@ -504,23 +560,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -528,7 +568,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">递归</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
               </li>
              
               <li class="article-tag-list-item">
