@@ -16,14 +16,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://github.com/FindMeCoder/blog-pic/blob/stl/2.jpg">
-<meta property="og:image" content="https://github.com/FindMeCoder/blog-pic/blob/stl/1.jpg">
-<meta property="og:image" content="https://github.com/FindMeCoder/blog-pic/blob/stl/3.jpg">
-<meta property="og:updated_time" content="2019-03-31T12:43:46.356Z">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/2.jpg">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/1.jpg">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/1.jpg">
+<meta property="og:updated_time" content="2019-03-31T12:47:04.566Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="c++中const关键字总结">
 <meta name="twitter:description" content="最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。  STL简介 STL版本 STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。 SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。 注意，SGI STL并不是原封不动的被用于GCC">
-<meta name="twitter:image" content="https://github.com/FindMeCoder/blog-pic/blob/stl/2.jpg">
+<meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/stl/2.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -218,8 +218,8 @@ var _hmt = _hmt || [];
 <p><em><strong>配接器</strong></em>(adapter)：将一种容器修饰为功能不同的另一种容器，如以容器vector为基础，在其上实现stack，stack的行为也是一种容器。这就是一种配接器。除此之外，还有迭代器配接器和仿函数配接器。</p>
 <h3 id="stl文件概览"><a class="markdownIt-Anchor" href="#stl文件概览"></a> STL文件概览</h3>
 <p>这是SGI STL(V3.3)的所有文件：</p>
-<p><img src="https://github.com/FindMeCoder/blog-pic/blob/stl/2.jpg" alt=""></p>
-<p><img src="https://github.com/FindMeCoder/blog-pic/blob/stl/1.jpg" alt=""></p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/2.jpg" alt=""></p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
 <p>大约可以将文件分三类：</p>
 <p>STL标准头文件（无文件后缀），如vector, deque, list, map, algorithm, functional</p>
 <p>SGI STL内部文件（STL的真正实现），如stl_vector.h, stl_deque.h, stl_list.h, stl_map.h, stl_algo.h, stl_function.h</p>
@@ -227,7 +227,7 @@ var _hmt = _hmt || [];
 第三类通常不推荐使用，所以我们不用考虑，可以认为它的功能与第一类文件一样（实际有区别）。</p>
 <h3 id="stl文件包含关系"><a class="markdownIt-Anchor" href="#stl文件包含关系"></a> STL文件包含关系</h3>
 <p>这是部分STL文件的包含关系：</p>
-<p><img src="https://github.com/FindMeCoder/blog-pic/blob/stl/3.jpg" alt=""></p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
 <h3 id="空间配置器allocator"><a class="markdownIt-Anchor" href="#空间配置器allocator"></a> 空间配置器(allocator)</h3>
 <p>图中左上角为空间配置器，通常我们可以在代码中用&quot;#include <memory>&quot;来包含它，它的实际实现在三个文件中：</memory></p>
 <p>stl_construct.h: 对象的构造和析构</p>
@@ -350,17 +350,17 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2018/03/02/c++4/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/01/ml1/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          c++中const关键字总结
+          特征工程
         
       </div>
     </a>
   
   
-    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/03/02/c++4/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">c++中const关键字总结</div>
       <i class="icon-circle-right"></i>
     </a>
