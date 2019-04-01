@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Remove Duplicates from Sorted Array | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode {     int val;     TreeNode *left;     TreeNode *right;     TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } }; 二叉树的遍历树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两">
+  <meta name="description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode { 	int val; 	TreeNode *left; 	TreeNode *right; 	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } };   二叉树的遍历 树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历">
 <meta name="keywords" content="LeetCode,算法,树,递归">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Remove Duplicates from Sorted Array">
 <meta property="og:url" content="http://yoursite.com/2018/06/03/lc3/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode {     int val;     TreeNode *left;     TreeNode *right;     TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } }; 二叉树的遍历树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两">
+<meta property="og:description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode { 	int val; 	TreeNode *left; 	TreeNode *right; 	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } };   二叉树的遍历 树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历">
 <meta property="og:locale" content="default">
 <meta property="og:updated_time" content="2019-03-25T15:22:09.461Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Remove Duplicates from Sorted Array">
-<meta name="twitter:description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode {     int val;     TreeNode *left;     TreeNode *right;     TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } }; 二叉树的遍历树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两">
+<meta name="twitter:description" content="LeetCode 上二叉树的节点定义如下： struct TreeNode { 	int val; 	TreeNode *left; 	TreeNode *right; 	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { } };   二叉树的遍历 树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -200,69 +200,78 @@ var _hmt = _hmt || [];
       
         <p>LeetCode 上二叉树的节点定义如下：</p>
 <pre><code>struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
-};
-</code></pre><h2 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h2><p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
-<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
-<p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
-<p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
-<h2 id="Binary-Tree-Preorder-Traversal"><a href="#Binary-Tree-Preorder-Traversal" class="headerlink" title="Binary Tree Preorder Traversal"></a>Binary Tree Preorder Traversal</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>用栈或者 Morris 遍历。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
-<pre><code>class Solution {
-public:
-    vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-        vector&lt;int&gt; result;
-        const TreeNode *p;
-        stack&lt;const TreeNode *&gt; s;
-        p = root;
-        if (p != nullptr) s.push(p);
-        while (!s.empty()) {
-            p = s.top();
-            s.pop();
-            result.push_back(p-&gt;val);
-            if (p-&gt;right != nullptr) s.push(p-&gt;right);
-            if (p-&gt;left != nullptr) s.push(p-&gt;left);
-        }
-        return result;
-    }
-};
-</code></pre><p><strong>Morris 先序遍历</strong></p>
-<pre><code>class Solution {
-public:
-    vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-        vector&lt;int&gt; result;
-        TreeNode *cur, *prev;
-        cur = root;
-        while (cur != nullptr) {
-            if (cur-&gt;left == nullptr) {
-                result.push_back(cur-&gt;val);
-                prev = cur; /* cur 刚刚被访问过 */
-                cur = cur-&gt;right;
-                } else {
-                /* 查找前驱 */
-                TreeNode *node = cur-&gt;left;
-                while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
-                    node = node-&gt;right;
-                if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
-                    result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
-                    node-&gt;right = cur;
-                    prev = cur; /* cur 刚刚被访问过 */
-                    cur = cur-&gt;left;
-                } else { /* 已经线索化，则删除线索 */
-                    node-&gt;right = nullptr;
-                    /* prev = cur; 不能有这句，cur 已经被访问 */
-                    cur = cur-&gt;right;
-                }
-            }
-        }
-        return result;
-    }
+	int val;
+	TreeNode *left;
+	TreeNode *right;
+	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
 };
 </code></pre>
+<h2 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h2>
+<p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
+<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>
+与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
+<p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
+<p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
+<h2 id="binary-tree-preorder-traversal"><a class="markdownIt-Anchor" href="#binary-tree-preorder-traversal"></a> Binary Tree Preorder Traversal</h2>
+<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
+<p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
+<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
+<p>用栈或者 Morris 遍历。</p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
+<p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		const TreeNode *p;
+		stack&lt;const TreeNode *&gt; s;
+		p = root;
+		if (p != nullptr) s.push(p);
+		while (!s.empty()) {
+			p = s.top();
+			s.pop();
+			result.push_back(p-&gt;val);
+			if (p-&gt;right != nullptr) s.push(p-&gt;right);
+			if (p-&gt;left != nullptr) s.push(p-&gt;left);
+		}
+		return result;
+	}
+};
+</code></pre>
+<p><strong>Morris 先序遍历</strong></p>
+<pre><code>class Solution {
+public:
+	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+		vector&lt;int&gt; result;
+		TreeNode *cur, *prev;
+		cur = root;
+		while (cur != nullptr) {
+			if (cur-&gt;left == nullptr) {
+				result.push_back(cur-&gt;val);
+				prev = cur; /* cur 刚刚被访问过 */
+				cur = cur-&gt;right;
+				} else {
+				/* 查找前驱 */
+				TreeNode *node = cur-&gt;left;
+				while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
+					node = node-&gt;right;
+				if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
+					result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
+					node-&gt;right = cur;
+					prev = cur; /* cur 刚刚被访问过 */
+					cur = cur-&gt;left;
+				} else { /* 已经线索化，则删除线索 */
+					node-&gt;right = nullptr;
+					/* prev = cur; 不能有这句，cur 已经被访问 */
+					cur = cur-&gt;right;
+				}
+			}
+		}
+		return result;
+	}
+};
+</code></pre>
+
       
 
       
@@ -368,18 +377,18 @@ public:
   
 <nav id="article-nav">
   
-    <a href="/2018/06/03/lc4/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/03/lc2/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Binary Tree Level Order Traversal
+          Remove Duplicates from Sorted Array
         
       </div>
     </a>
   
   
-    <a href="/2018/06/02/lc1/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Remove Duplicates from Sorted Array</div>
+    <a href="/2018/06/03/lc4/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Binary Tree Level Order Traversal</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -406,7 +415,7 @@ public:
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉树的遍历"><span class="toc-number">1.</span> <span class="toc-text">二叉树的遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Binary-Tree-Preorder-Traversal"><span class="toc-number">2.</span> <span class="toc-text">Binary Tree Preorder Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">2.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.2.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">2.3.</span> <span class="toc-text">代码</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#二叉树的遍历"><span class="toc-number">1.</span> <span class="toc-text"> 二叉树的遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-preorder-traversal"><span class="toc-number">2.</span> <span class="toc-text"> Binary Tree Preorder Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">2.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -575,6 +584,14 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -599,15 +616,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">nlp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LDA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">word2vec</a>
               </li>
             
             <div class="clearfix"></div>

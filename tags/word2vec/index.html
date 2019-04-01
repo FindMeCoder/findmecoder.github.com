@@ -6,25 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>特征工程 | Hexo</title>
+  <title>Tag: word2vec | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
-<meta name="keywords" content="机器学习">
-<meta property="og:type" content="article">
-<meta property="og:title" content="特征工程">
-<meta property="og:url" content="http://yoursite.com/2018/06/01/ml1/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/tags/word2vec/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/1.jpg">
-<meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/2.jpg">
-<meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/3.jpg">
-<meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/4.jpg">
-<meta property="og:updated_time" content="2019-03-30T03:02:14.863Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="特征工程">
-<meta name="twitter:description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
-<meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/ml/1.jpg">
+<meta name="twitter:title" content="Hexo">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -183,48 +173,36 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-ml1" class="article article-type-post " itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      特征工程
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/11/01/nlp1/" class="archive-article-date">
+  	<time datetime="2018-11-01T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-01</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/11/01/nlp1/">词向量，LDA，word2vec三者的关系是什么?</a>
     </h1>
   
 
-        
-        <a href="/2018/06/01/ml1/" class="archive-article-date">
-  	<time datetime="2018-06-01T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><blockquote>
-<h4 id="特征工程概述"><a href="#特征工程概述" class="headerlink" title="特征工程概述"></a>特征工程概述</h4><h4 id="特征归一化"><a href="#特征归一化" class="headerlink" title="特征归一化"></a>特征归一化</h4><h4 id="高维组合特征及处理"><a href="#高维组合特征及处理" class="headerlink" title="高维组合特征及处理"></a>高维组合特征及处理</h4></blockquote>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="1-特征工程概述"><a href="#1-特征工程概述" class="headerlink" title="1. 特征工程概述"></a>1. 特征工程概述</h3><p>​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占有非常重要的作用，一般认为括特征构建、特征提取、特征选择三个部分。特征构建比较麻烦，需要一定的经验。 特征提取与特征选择都是为了从原始特征中找出最有效的特征。它们之间的区别是特征提取强调通过特征转换的方式得到一组具有明显物理或统计意义的特征；而特征选择是从特征集合中挑选一组具有明显物理或统计意义的特征子集。两者都能帮助减少特征的维度、数据冗余，特征提取有时能发现更有意义的特征属性，特征选择的过程经常能表示出每个特征的重要性对于模型构建的重要性。本文主要尝试总结几个常用的特征提取和特征选择的方法。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/1.jpg" alt=""></p>
-<h3 id="2-特征归一化"><a href="#2-特征归一化" class="headerlink" title="2. 特征归一化"></a>2. 特征归一化</h3><p>​    对数值类型的特征做归一化可以将所有的特征都统一到一个大致相同的数值区间内。最常用的方法主要有以下两种。</p>
-<p>（1）线性函数归一化（Min-Max Scaling）。它对原始数据进行线性变换，使结果映射到[0, 1]的范围，实现对原始数据的等比缩放。归一化公式如下。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/2.jpg" alt=""></p>
-<p>其中X为原始数据，Xmax、Xmin分别为数据最大值和最小值</p>
-<p>（2）零均值归一化（Z-Score Normalization）。它会将原始数据映射到均值为0、标准差为1的分布上。具体来说，假设原始特征的均值为μ、标准差为σ，那么归一化公式定义为</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/3.jpg" alt=""></p>
-<p>​    为什么需要对数值型特征做归一化呢？我们不妨借助随机梯度下降的实例来说明归一化的重要性。假设有两种数值型特征，x1的取值范围为 [0, 10]，x2的取值范围为[0, 3]，于是可以构造一个目标函数符合图1.1（a）中的等值图。在学习速率相同的情况下，x1的更新速度会大于x2，需要较多的迭代才能找到最优解。如果将x1和x2归一化到相同的数值区间后，优化目标的等值图会变成图1.1（b）中的圆形，x1和x2的更新速度变得更为一致，容易更快地通过梯度下降找到最优解。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/4.jpg" alt=""></p>
-<p>​                                        图1.1 数据归一化对梯度下降收敛速度产生的影响</p>
-<p>​    当然，数据归一化并不是万能的。在实际应用中，通过梯度下降法求解的模型通常是需要归一化的，包括线性回归、逻辑回归、支持向量机、神经网络等模型。但对于决策树模型则并不适用，以C4.5为例，决策树在进行节点分裂时主要依据数据集D关于特征x的信息增益比，而信息增益比跟特征是否经过归一化是无关的，因为归一化并不会改变样本在特征x上的信息增益。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -232,11 +210,23 @@ var _hmt = _hmt || [];
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">机器学习</a>
         		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">nlp</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LDA</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">word2vec</a>
+        		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -249,146 +239,17 @@ var _hmt = _hmt || [];
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/06/01/ml1/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/06/02/lc1/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Remove Duplicates from Sorted Array
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">c++中const关键字总结</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#主要内容"><span class="toc-number">1.</span> <span class="toc-text">主要内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#特征工程概述"><span class="toc-number">1.0.1.</span> <span class="toc-text">特征工程概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#特征归一化"><span class="toc-number">1.0.2.</span> <span class="toc-text">特征归一化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#高维组合特征及处理"><span class="toc-number">1.0.3.</span> <span class="toc-text">高维组合特征及处理</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#正文"><span class="toc-number">2.</span> <span class="toc-text">正文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-特征工程概述"><span class="toc-number">2.1.</span> <span class="toc-text">1. 特征工程概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-特征归一化"><span class="toc-number">2.2.</span> <span class="toc-text">2. 特征归一化</span></a></li></ol></li>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-
-	
-    <!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTg0My8xNjM3MA==">
-<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
-
-       if (typeof LivereTower === 'function') { return; }
-
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
-
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-</script>
-<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
-</div>
-<!-- City�氲װ��������� -->
-   
-  
-  
-  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -411,9 +272,9 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
@@ -518,6 +379,14 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -542,15 +411,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">nlp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LDA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">word2vec</a>
               </li>
             
             <div class="clearfix"></div>

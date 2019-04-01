@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>stl空间配置器(allocator) | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="allocator 简述以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; } allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vecto">
+  <meta name="description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
 <meta name="keywords" content="C++,后台开发,STL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="stl空间配置器(allocator)">
 <meta property="og:url" content="http://yoursite.com/2018/09/20/c++4/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="allocator 简述以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; } allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vecto">
+<meta property="og:description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/4.jpg">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/stl/5.jpg">
 <meta property="og:updated_time" content="2019-04-01T10:08:15.491Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="stl空间配置器(allocator)">
-<meta name="twitter:description" content="allocator 简述以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; } allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vecto">
+<meta name="twitter:description" content="allocator 简述 以vector为例，通常我们这样使用STL的容器： #include &amp;lt;vector&amp;gt; int main() {     std::vector&amp;lt;int&amp;gt; v;     // Do something;     return 0; }  allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括ve">
 <meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/stl/4.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -201,7 +201,8 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="allocator-简述"><a href="#allocator-简述" class="headerlink" title="allocator 简述"></a>allocator 简述</h3><p>以vector为例，通常我们这样使用STL的容器：</p>
+        <h3 id="allocator-简述"><a class="markdownIt-Anchor" href="#allocator-简述"></a> allocator 简述</h3>
+<p>以vector为例，通常我们这样使用STL的容器：</p>
 <pre><code>#include &lt;vector&gt;
 int main()
 {
@@ -209,10 +210,11 @@ int main()
     // Do something;
     return 0;
 }
-</code></pre><p>allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vector）身后，默默完成内存配置与释放，对象构造和析构的工作。</p>
+</code></pre>
+<p>allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vector）身后，默默完成内存配置与释放，对象构造和析构的工作。</p>
 <p><img src="https://findmecoder.github.io/blog-pic/stl/4.jpg" alt=""></p>
 <p>图中左边是用户代码，右边是STL内部。</p>
-<p>从用户代码<strong>std::vector<int> v</int></strong>;开始，<strong>vector</strong>的模板参数<strong>class T</strong>被替换为<strong>int</strong>，同时第二个模板参数因为没有指定，所以为默认模板参数，即<strong>allocator<int></int></strong>，这个vector对象v会在内部实例一个<strong>allocator<int></int></strong>的对象，用来管理内存。</p>
+<p>从用户代码<strong>std::vector<int> v</int></strong>;开始，<strong>vector</strong>的模板参数<strong>class T</strong>被替换为<strong>int</strong>，同时第二个模板参数因为没有指定，所以为默认模板参数，即<strong>allocator<int></int></strong>，这个vector对象v会在内部实例一个**allocator<int>**的对象，用来管理内存。</int></p>
 <p>你注意到了，为什么allocator也需要接收这个模板参数T，管理内存应该不需要知道T的具体类型（int）吧？</p>
 <p>前面说了，allocator除了负责内存的分配和释放，还负责对象的构造和析构，知道类型才能调用对象的构造和析构函数。而且，对于分配内存，allocator接口设计中有类似于“为n个T类型的对象分配内存”这种批量操作，这就需要知道类型才能算出对象需要的空间了。</p>
 <p>你也注意到，容器vector的第二个参数有默认值，那么我们也可以为其指定一个其他的值？也就是说，我们自己按照STL标准实现一个allocator，就可以搭配STL里的容器使用了？</p>
@@ -231,7 +233,9 @@ int main()
     // Do something;
     return 0;
 }
-</code></pre><h3 id="allocator-标准接口"><a href="#allocator-标准接口" class="headerlink" title="allocator 标准接口"></a>allocator 标准接口</h3><p>STL是一个标准，只对接口进行规范，接口背后的实现可以有不同版本，所以目前流行的STL如Visual C++采用的P. J. Plauger 版本，GCC编译器采用的SGI STL版本等都是常见的STL。SGI STL是最流行的版本，我们主要关注SGI STL的allocator实现。</p>
+</code></pre>
+<h3 id="allocator-标准接口"><a class="markdownIt-Anchor" href="#allocator-标准接口"></a> allocator 标准接口</h3>
+<p>STL是一个标准，只对接口进行规范，接口背后的实现可以有不同版本，所以目前流行的STL如Visual C++采用的P. J. Plauger 版本，GCC编译器采用的SGI STL版本等都是常见的STL。SGI STL是最流行的版本，我们主要关注SGI STL的allocator实现。</p>
 <p>这是STL标准要求的allocator必要接口：</p>
 <pre><code>// 以下几种自定义类型是一种type_traits技巧，暂时不需要了解
 allocator::value_type
@@ -267,7 +271,8 @@ size_type allocator:maxsize() const
 void allocator::construct(pointer p, const T&amp; x)
 // 调用对象的析构函数，等同于 p-&gt;~T()
 void allocator::destroy(pointer p)
-</code></pre><p>上面的标准接口实际只需要关注最后的<strong>allocate</strong>，<strong>deallocate</strong>，<strong>construct</strong>和<strong>destroy</strong>函数的实现即可。整个allocator最重要的函数就是这四个。从功能上，这四者可以简单理解为C++的<strong>::operator new</strong>和<strong>::operator delete</strong>，构造函数和析构函数，实际上，一个最简单的allocator就可以理解为对new，delete的简单封装,以及对构造函数和析构函数的直接调用。</p>
+</code></pre>
+<p>上面的标准接口实际只需要关注最后的<strong>allocate</strong>，<strong>deallocate</strong>，<strong>construct</strong>和<strong>destroy</strong>函数的实现即可。整个allocator最重要的函数就是这四个。从功能上，这四者可以简单理解为C++的**::operator new<strong>和</strong>::operator delete**，构造函数和析构函数，实际上，一个最简单的allocator就可以理解为对new，delete的简单封装,以及对构造函数和析构函数的直接调用。</p>
 <p>以下是书中给出的一个最简单的allocator实现，它是符合STL标准的。</p>
 <pre><code>#ifndef _MYALLOC_
 #define _MYALLOC_
@@ -341,7 +346,8 @@ namespace my_alloc
 } // end of namespace myalloc
 
 #endif // _MYALLOC_
-</code></pre><p>现在，我们可以使用自己编写的allocator来为vector分配空间：</p>
+</code></pre>
+<p>现在，我们可以使用自己编写的allocator来为vector分配空间：</p>
 <pre><code>#include &lt;vector&gt;
 int main()
 {
@@ -349,8 +355,10 @@ int main()
     // Do something;
     return 0;
 }
-</code></pre><p><strong><em>然而，这样并不能通过编译（如果你使用的是GCC编译器），因为SGI STL的allocator并不完全符合STL规范，我们编写的符合规范的自然不能搭配使用，SGI STL版本的allocator具体实现在下文阐述。</em></strong></p>
-<h3 id="SGI-STL-标准配置器-std-allocator"><a href="#SGI-STL-标准配置器-std-allocator" class="headerlink" title="SGI STL 标准配置器(std::allocator)"></a>SGI STL 标准配置器(std::allocator)</h3><pre><code>#ifnedf DEFALLOC_H
+</code></pre>
+<p><em><strong>然而，这样并不能通过编译（如果你使用的是GCC编译器），因为SGI STL的allocator并不完全符合STL规范，我们编写的符合规范的自然不能搭配使用，SGI STL版本的allocator具体实现在下文阐述。</strong></em></p>
+<h3 id="sgi-stl-标准配置器stdallocator"><a class="markdownIt-Anchor" href="#sgi-stl-标准配置器stdallocator"></a> SGI STL 标准配置器(std::allocator)</h3>
+<pre><code>#ifnedf DEFALLOC_H
 #define DEFALLOC_H
 
 #include &lt;new.h&gt;
@@ -400,14 +408,17 @@ class allocator&lt;void&gt; {
 public:
     typedef void* pointer;
 }
-</code></pre><h3 id="SGI-STL-特殊配置器-std-alloc"><a href="#SGI-STL-特殊配置器-std-alloc" class="headerlink" title="SGI STL 特殊配置器(std::alloc)"></a>SGI STL 特殊配置器(std::alloc)</h3><p><img src="https://findmecoder.github.io/blog-pic/stl/5.jpg" alt=""></p>
+</code></pre>
+<h3 id="sgi-stl-特殊配置器stdalloc"><a class="markdownIt-Anchor" href="#sgi-stl-特殊配置器stdalloc"></a> SGI STL 特殊配置器(std::alloc)</h3>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/5.jpg" alt=""></p>
 <p>我们可以看到，用户代码实例化一个vector对象，vector对象调用alloc的接口，注意，不同于之前标准的allocator，这里不需要实例化一个空间配置器，只需要调用alloc的静态函数就行了。</p>
 <p>std::alloc的接口与标准非常相似：</p>
 <pre><code>static T* allocate()函数负责空间配置，返回一个T对象大小的空间。
 static T* allocate(size_t)函数负责批量空间配置。
 static void deallocate(T*)函数负责空间释放。
 static void deallocate(T*,size_t)函数负责批量空间释放。
-</code></pre><p>在接口之下，我们看到还有两级配置器，上面的接口根据情况调用这两个配置器，第二级配置器实现了内存池和自由链表，当程序多次进行小空间的配置时，可以从内存池和自由链表中获取空间，减少系统调用，提升性能。当进行大空间的配置时，上面的接口直接调用第一级配置器。最终，它们都是用malloc()和free()来配置和释放空间。</p>
+</code></pre>
+<p>在接口之下，我们看到还有两级配置器，上面的接口根据情况调用这两个配置器，第二级配置器实现了内存池和自由链表，当程序多次进行小空间的配置时，可以从内存池和自由链表中获取空间，减少系统调用，提升性能。当进行大空间的配置时，上面的接口直接调用第一级配置器。最终，它们都是用malloc()和free()来配置和释放空间。</p>
 <p>这样看起来std::alloc的结构还算清晰，但是实际实现还会出现多种边界情况，比如，当系统调用malloc()空间不足时，我们需要让第一级配置器来处理，这可能涉及从第二级配置器中回收已经缓存但还未使用的空间，事情就变得繁琐了。</p>
 
       
@@ -549,7 +560,7 @@ static void deallocate(T*,size_t)函数负责批量空间释放。
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-简述"><span class="toc-number">1.</span> <span class="toc-text">allocator 简述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-标准接口"><span class="toc-number">2.</span> <span class="toc-text">allocator 标准接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SGI-STL-标准配置器-std-allocator"><span class="toc-number">3.</span> <span class="toc-text">SGI STL 标准配置器(std::allocator)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SGI-STL-特殊配置器-std-alloc"><span class="toc-number">4.</span> <span class="toc-text">SGI STL 特殊配置器(std::alloc)</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-简述"><span class="toc-number">1.</span> <span class="toc-text"> allocator 简述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#allocator-标准接口"><span class="toc-number">2.</span> <span class="toc-text"> allocator 标准接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sgi-stl-标准配置器stdallocator"><span class="toc-number">3.</span> <span class="toc-text"> SGI STL 标准配置器(std::allocator)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sgi-stl-特殊配置器stdalloc"><span class="toc-number">4.</span> <span class="toc-text"> SGI STL 特殊配置器(std::alloc)</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -718,6 +729,14 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -742,15 +761,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">nlp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LDA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">word2vec</a>
               </li>
             
             <div class="clearfix"></div>

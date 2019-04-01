@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Remove Duplicates from Sorted Array | Hexo</title>
+  <title>词向量，LDA，word2vec三者的关系是什么? | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
-<meta name="keywords" content="LeetCode,数组,算法,二分法">
+  <meta name="description" content="词的分布式表示  基于矩阵的分布表示   基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属">
+<meta name="keywords" content="机器学习,nlp,LDA,word2vec">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Remove Duplicates from Sorted Array">
-<meta property="og:url" content="http://yoursite.com/2018/06/03/lc2/index.html">
+<meta property="og:title" content="词向量，LDA，word2vec三者的关系是什么?">
+<meta property="og:url" content="http://yoursite.com/2018/11/01/nlp1/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+<meta property="og:description" content="词的分布式表示  基于矩阵的分布表示   基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-25T15:07:48.679Z">
+<meta property="og:image" content="https://findmecoder.github.io/blog-pic/nlp/1.jpg">
+<meta property="og:updated_time" content="2019-04-01T10:42:58.647Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Remove Duplicates from Sorted Array">
-<meta name="twitter:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+<meta name="twitter:title" content="词向量，LDA，word2vec三者的关系是什么?">
+<meta name="twitter:description" content="词的分布式表示  基于矩阵的分布表示   基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属">
+<meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/nlp/1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -178,99 +180,80 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-lc2" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-nlp1" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Remove Duplicates from Sorted Array
+      词向量，LDA，word2vec三者的关系是什么?
     </h1>
   
 
         
-        <a href="/2018/06/03/lc2/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+        <a href="/2018/11/01/nlp1/" class="archive-article-date">
+  	<time datetime="2018-11-01T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-		return -1;
-	}
-};
-</code></pre>
-<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
-Would this affect the run-time complexity? How and why?<br>
-Write a function to determine if a given target is in the array.</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
-如 [1,3,1,1,1]。<br>
-如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
-<p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
-<p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
-<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	bool search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-				if (A[mid] == target)
-					return true;
-				if (A[first] &lt; A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else
-					first = mid + 1;
-				} else if (A[first] &gt; A[mid]) {
-				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			} else
-
-			first++;
-		}
-		return false;
-	}
-};</code></pre>
+        <h3 id="词的分布式表示"><a class="markdownIt-Anchor" href="#词的分布式表示"></a> 词的分布式表示</h3>
+<h4 id="基于矩阵的分布表示"><a class="markdownIt-Anchor" href="#基于矩阵的分布表示"></a> 基于矩阵的分布表示</h4>
+<ol>
+<li>
+<p>基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属于基于矩阵的分布表示。</p>
+</li>
+<li>
+<p>基于聚类的分布表示。类似LDA。</p>
+</li>
+<li>
+<p>基于神经网络的分布表示，词嵌入（ word embedding）基于神经网络的分布表示一般称为词向量、词嵌入（ word embedding）或分布式表示（ distributed representation）。</p>
+</li>
+</ol>
+<p>神经网络词向量表示技术通过神经网络技术对上下文，以及上下文与目标词之间的关系进行建模。由于神经网络较为灵活，这类方法的最大优势在于可以表示复杂的上下文。在前面基于矩阵的分布表示方法中，最常用的上下文是词。如果使用包含词序信息的 n-gram 作为上下文，当 n 增加时， n-gram 的总数会呈指数级增长，此时会遇到维数灾难问题。而神经网络在表示 n-gram 时，可以通过一些组合方式对 n 个词进行组合，参数个数仅以线性速度增长。有了这一优势，神经网络模型可以对更复杂的上下文进行建模，在词向量中包含更丰富的语义信息。</p>
+<h3 id="词嵌入-word-embedding"><a class="markdownIt-Anchor" href="#词嵌入-word-embedding"></a> 词嵌入（ word embedding）</h3>
+<h4 id="概念"><a class="markdownIt-Anchor" href="#概念"></a> 概念</h4>
+<p>基于神经网络的分布表示又称为词向量、词嵌入，神经网络词向量模型与其它分布表示方法一样，均基于分布假说，核心依然是上下文的表示以及上下文与目标词之间的关系的建模。为了选择一种模型刻画某个词（下文称“目标词”）与其上下文之间的关系，我们需要在词向量中capture到一个词的上下文信息。同时，上面我们恰巧提到了统计语言模型正好具有捕捉上下文信息的能力。那么构建上下文与目标词之间的关系，最自然的一种思路就是使用语言模型。从历史上看，早期的词向量只是神经网络语言模型的副产品。</p>
+<h4 id="理解"><a class="markdownIt-Anchor" href="#理解"></a> 理解</h4>
+<p>one-hot表示法具有维度过大的缺点，那么现在将vector做一些改进：1、将vector每一个元素由整形改为浮点型，变为整个实数范围的表示；2、将原来稀疏的巨大维度压缩嵌入到一个更小维度的空间。如图示</p>
+<p><img src="https://findmecoder.github.io/blog-pic/nlp/1.jpg" alt=""></p>
+<h3 id="神经网络语言模型与word2vec"><a class="markdownIt-Anchor" href="#神经网络语言模型与word2vec"></a> 神经网络语言模型与word2vec</h3>
+<p>通过神经网络训练语言模型可以得到词向量，那么，究竟有哪些类型的神经网络语言模型呢？个人所知，大致有这么些个：</p>
+<p>a) Neural Network Language Model ，NNLM</p>
+<p>b) Log-Bilinear Language Model， LBL</p>
+<p>c) Recurrent Neural Network based Language Model，RNNLM</p>
+<p>d) Collobert 和 Weston 在2008 年提出的 C&amp;W 模型</p>
+<p>e) Mikolov 等人提出了 CBOW（ Continuous Bagof-Words）和 Skip-gram 模型</p>
+<h4 id="word2vec与cbow-skip-gram"><a class="markdownIt-Anchor" href="#word2vec与cbow-skip-gram"></a> word2vec与CBOW、Skip-gram</h4>
+<p>分布式词向量并不是word2vec的作者发明的，他只是提出了一种更快更好的方式来训练语言模型罢了。分别是：连续词袋模型Continous Bag of Words Model(CBOW)和Skip-Gram Model，这两种都是可以训练出词向量的方法，再具体代码操作中可以只选择其一，不过据论文说CBOW要更快一些。</p>
+<p>Word embedding的训练方法大致可以分为两类：一类是无监督或弱监督的预训练；一类是端对端（end to end）的有监督训练。无监督或弱监督的预训练以word2vec和auto-encoder为代表。这一类模型的特点是，不需要大量的人工标记样本就可以得到质量还不错的embedding向量。不过因为缺少了任务导向，可能和我们要解决的问题还有一定的距离。因此，我们往往会在得到预训练的embedding向量后，用少量人工标注的样本去训练整个模型。</p>
+<p>相比之下，端对端的有监督模型在最近几年里越来越受到人们的关注。与无监督模型相比，端对端的模型在结构上往往更加复杂。同时，也因为有着明确的任务导向，端对端模型学习到的embedding向量也往往更加准确。例如，通过一个embedding层和若干个卷积层连接而成的深度神经网络以实现对句子的情感分类，可以学习到语义更丰富的词向量表达。</p>
+<p><strong>词向量既能够降低维度，又能够capture到当前词在本句子中上下文的信息（表现为前后距离关系），那么我们对其用来表示语言句子词语作为NN的输入是非常自信与满意的。</strong></p>
+<p>词向量，有时候翻译为词嵌入（word embeddings），又可以称作distributed word representation[1], 最初起源是神经网络语言模型（Neural Networks Language Models）， <strong>Word2Vec</strong>是目前最常见的<strong>word embeddings</strong>，另外一种著名word embeddings是<strong>GloVe</strong>。</p>
+<p>**LDA（Latent Dirichlet Allocation）**是主题模型（Topic Models）的一种计算方法，和词向量并无直接关系，不过如果扯上另外一种topic model，<strong>LSA（Latent Semantic Analysis）</strong>，那就有一些关系了：</p>
+<ol>
+<li>
+<p>LSA的核心技术是<strong>SVD</strong>，一种矩阵分解，而SVD一般在NLP中的使用并非是使用它分解的三个矩阵，而是合并右边两个矩阵。那么合并之后，<strong>左边</strong>的矩阵就可以视为<strong>word embeddings</strong>，而<strong>右边</strong>的矩阵可以视为当它是<strong>context时候的embeddings</strong>。当然，一般的矩阵分解， 比如NMF，也可以得到word embeddings。</p>
+</li>
+<li>
+<p>而word2vec一再被人证明，从结果看，是一个<strong>全局PPMI（共现）矩阵</strong>的分解。某种意义讲，word embeddings可以理解是传统矩阵分解的一个加速版本。另外LDA和word embeddings还是可以有点联系，比如加入LDA的结果作为word embeddings的输入，来增强文章分类效果。</p>
+</li>
+<li>
+<p>LDA的作用之一是通过对<strong>doc-word</strong>矩阵进行建模抽出<strong>doc-topic</strong>和<strong>topic-word</strong>两个分布。而<strong>word2vec</strong>其实是分解了<strong>word-context</strong>矩阵。其实都是对一个**“A”-“B”**矩阵进行建模。那么LDA自然也可以用于对word-context矩阵进行建模，而word2vec也可以对doc-word矩阵做分解。</p>
+</li>
+</ol>
+<h4 id="区别"><a class="markdownIt-Anchor" href="#区别"></a> 区别</h4>
+<ol>
+<li>
+<p>Word2vec用来生成各个词语的词向量，而LDA是生成文章的主题及其概率分布。其实两者没什么关系。</p>
+</li>
+<li>
+<p>词向量所体现的是semantic和syntactic这些 low-level的信息，而LDA的主题词体现的是文章topic这一high-level层的信息。</p>
+</li>
+</ol>
 
       
 
@@ -284,19 +267,19 @@ public:
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">机器学习</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">nlp</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LDA</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">word2vec</a>
         		</li>
       		
 		</ul>
@@ -308,7 +291,7 @@ public:
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        			<a href="/categories/机器学习/" class="article-tag-list-link color5">机器学习</a>
         		</li>
       		
 		</ul>
@@ -363,7 +346,7 @@ public:
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/06/03/lc2/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/11/01/nlp1/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -377,18 +360,9 @@ public:
   
 <nav id="article-nav">
   
-    <a href="/2018/06/03/lc6/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Remove Duplicates from Sorted Array
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/06/03/lc3/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Remove Duplicates from Sorted Array</div>
+    <a href="/2018/10/02/c++5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">epoll的理解</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -415,7 +389,7 @@ public:
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-i"><span class="toc-number">1.</span> <span class="toc-text"> Search in Rotated Sorted Array I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">1.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">1.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-ii"><span class="toc-number">2.</span> <span class="toc-text"> Search in Rotated Sorted Array II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-2"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码-2"><span class="toc-number">2.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#词的分布式表示"><span class="toc-number">1.</span> <span class="toc-text"> 词的分布式表示</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#基于矩阵的分布表示"><span class="toc-number">1.1.</span> <span class="toc-text"> 基于矩阵的分布表示</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#词嵌入-word-embedding"><span class="toc-number">2.</span> <span class="toc-text"> 词嵌入（ word embedding）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#概念"><span class="toc-number">2.1.</span> <span class="toc-text"> 概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#理解"><span class="toc-number">2.2.</span> <span class="toc-text"> 理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#神经网络语言模型与word2vec"><span class="toc-number">3.</span> <span class="toc-text"> 神经网络语言模型与word2vec</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#word2vec与cbow-skip-gram"><span class="toc-number">3.1.</span> <span class="toc-text"> word2vec与CBOW、Skip-gram</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#区别"><span class="toc-number">3.2.</span> <span class="toc-text"> 区别</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>

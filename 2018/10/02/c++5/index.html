@@ -210,9 +210,10 @@ var _hmt = _hmt || [];
 <p>我们只要不停的把所有流从头到尾问一遍，又从头开始。这样就可以处理多个流了，但这样的做法显然不好，因为如果所有的流都没有数据，那么只会白白浪费CPU。这里要补充一点，阻塞模式下，内核对于I/O事件的处理是阻塞或者唤醒，而非阻塞模式下则把I/O事件交给其他对象（后文介绍的select以及epoll）处理甚至直接忽略。</p>
 <p>为了避免CPU空转，可以引进了一个代理（一开始有一位叫做select的代理，后来又有一位叫做poll的代理，不过两者的本质是一样的）。这个代理比较厉害，可以同时观察许多流的I/O事件，在空闲的时候，会把当前线程阻塞掉，当有一个或多个流有I/O事件时，就从阻塞态中醒来，于是我们的程序就会轮询一遍所有的流（于是我们可以把“忙”字去掉了）。代码长这样:</p>
 <p>于是，如果没有I/O事件产生，我们的程序就会阻塞在select处。但是依然有个问题，我们从select那里仅仅知道了，有I/O事件发生了，但却并不知道是那几个流（可能有一个，多个，甚至全部），我们只能无差别轮询所有流，找出能读出数据，或者写入数据的流，对他们进行操作。但是使用select，我们有O(n)的无差别轮询复杂度，同时处理的流越多，每一次无差别轮询时间就越长。</p>
-<p><strong><em>说了这么多，终于能好好解释epoll了</em></strong></p>
+<p><em><strong>说了这么多，终于能好好解释epoll了</strong></em></p>
 <p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数，也有认为O(1)的，在讨论epoll的实现细节之前，先把epoll的相关操作列出。</p>
-<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。<br>此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数</p>
+<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。<br>
+此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数</p>
 <pre><code>epoll_create 创建一个epoll对象，一般epollfd = epoll_create()
 
 epoll_ctl （epoll_add/epoll_del的合体），往epoll对象中增加/删除某一个流的某一个事件比如
@@ -222,16 +223,21 @@ epoll_ctl(epollfd, EPOLL_CTL_ADD, socket, EPOLLIN);//有缓冲区内有数据时
 epoll_ctl(epollfd, EPOLL_CTL_DEL, socket, EPOLLOUT);//缓冲区可写入时epoll_wait返回
 
 epoll_wait(epollfd,...)等待直到注册的事件发生
-</code></pre><p><strong><em>有了上边的讲解，那么以网络 IO 为代表的事件是如何从网卡到内核，最终通知进程做相关处理的？</em></strong></p>
+</code></pre>
+<p><em><strong>有了上边的讲解，那么以网络 IO 为代表的事件是如何从网卡到内核，最终通知进程做相关处理的？</strong></em></p>
 <p>epoll其实是更复杂的设计和实现，基本原理是一致的。下面以 TCP 新建连接为例子，描述这一内核的处理过程：</p>
 <ol>
-<li><p>网卡收到 SYN，触发内核中断，直接打断当前执行的进程，CPU 进行中断处理，最终将该 SYN 连接信息保存在相应 listen socket 的半连接队列里，并向对方发送 SYN-ACK，然后恢复运行被打断的进程。</p>
+<li>
+<p>网卡收到 SYN，触发内核中断，直接打断当前执行的进程，CPU 进行中断处理，最终将该 SYN 连接信息保存在相应 listen socket 的半连接队列里，并向对方发送 SYN-ACK，然后恢复运行被打断的进程。</p>
 </li>
-<li><p>进程执行完当前作业，调用 accept 系统调用（阻塞）继续处理新连接。accept 发现连接队列当前没有新连接后，于是在 listen socket 的 wait queue 的上注册唤醒自身进程的回调函数，然后内核将这个进程置为 Block 状态，并让出 CPU 执行其他 Ready 状态的进程。</p>
+<li>
+<p>进程执行完当前作业，调用 accept 系统调用（阻塞）继续处理新连接。accept 发现连接队列当前没有新连接后，于是在 listen socket 的 wait queue 的上注册唤醒自身进程的回调函数，然后内核将这个进程置为 Block 状态，并让出 CPU 执行其他 Ready 状态的进程。</p>
 </li>
-<li><p>网卡收到 ACK，继续触发内核中断，内核完成标准的三次握手，将连接从半连接队列移入连接队列，于是 listen socket 有可读事件，内核调用 listen socket 的 wait queue 的唤醒回调函数，将之前阻塞的 accept 进程置为 Ready 调度状态。</p>
+<li>
+<p>网卡收到 ACK，继续触发内核中断，内核完成标准的三次握手，将连接从半连接队列移入连接队列，于是 listen socket 有可读事件，内核调用 listen socket 的 wait queue 的唤醒回调函数，将之前阻塞的 accept 进程置为 Ready 调度状态。</p>
 </li>
-<li><p>在内核下一个 CPU 调度窗口来临时，Ready 调度状态的 accept 进程被选中执行，发现连接队列有新连接，于是读取连接信息，并最终返回给用户态进程。</p>
+<li>
+<p>在内核下一个 CPU 调度窗口来临时，Ready 调度状态的 accept 进程被选中执行，发现连接队列有新连接，于是读取连接信息，并最终返回给用户态进程。</p>
 </li>
 </ol>
 <p>从上面过程可见，内核处理硬件事件是一个同步的过程，而把事件传递给用户进程是一个异步的过程。</p>
@@ -344,6 +350,15 @@ epoll_wait(epollfd,...)等待直到注册的事件发生
 
   
 <nav id="article-nav">
+  
+    <a href="/2018/11/01/nlp1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          词向量，LDA，word2vec三者的关系是什么?
+        
+      </div>
+    </a>
   
   
     <a href="/2018/09/20/c++4/" id="article-nav-older" class="article-nav-link-wrap">
@@ -543,6 +558,14 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -567,15 +590,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">机器学习</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">nlp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LDA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">word2vec</a>
               </li>
             
             <div class="clearfix"></div>

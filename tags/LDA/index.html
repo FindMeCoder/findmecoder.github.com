@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Remove Duplicates from Sorted Array | Hexo</title>
+  <title>Tag: LDA | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
-<meta name="keywords" content="LeetCode,数组,算法,二分法">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Remove Duplicates from Sorted Array">
-<meta property="og:url" content="http://yoursite.com/2018/06/03/lc2/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/tags/LDA/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-25T15:07:48.679Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Remove Duplicates from Sorted Array">
-<meta name="twitter:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+<meta name="twitter:title" content="Hexo">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -178,283 +173,83 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-lc2" class="article article-type-post " itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Remove Duplicates from Sorted Array
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/11/01/nlp1/" class="archive-article-date">
+  	<time datetime="2018-11-01T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-01</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/11/01/nlp1/">词向量，LDA，word2vec三者的关系是什么?</a>
     </h1>
   
 
-        
-        <a href="/2018/06/03/lc2/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-		return -1;
-	}
-};
-</code></pre>
-<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
-Would this affect the run-time complexity? How and why?<br>
-Write a function to determine if a given target is in the array.</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
-如 [1,3,1,1,1]。<br>
-如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
-<p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
-<p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
-<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	bool search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-				if (A[mid] == target)
-					return true;
-				if (A[first] &lt; A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else
-					first = mid + 1;
-				} else if (A[first] &gt; A[mid]) {
-				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			} else
-
-			first++;
-		}
-		return false;
-	}
-};</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">机器学习</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">nlp</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LDA</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">二分法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">word2vec</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        			<a href="/categories/机器学习/" class="article-tag-list-link color5">机器学习</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/06/03/lc2/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/06/03/lc6/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Remove Duplicates from Sorted Array
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/06/03/lc3/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Remove Duplicates from Sorted Array</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-i"><span class="toc-number">1.</span> <span class="toc-text"> Search in Rotated Sorted Array I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">1.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">1.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-ii"><span class="toc-number">2.</span> <span class="toc-text"> Search in Rotated Sorted Array II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-2"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码-2"><span class="toc-number">2.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-
-	
-    <!-- ������City�氲װ���� -->
-<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTg0My8xNjM3MA==">
-<script type="text/javascript">
-   (function(d, s) {
-       var j, e = d.getElementsByTagName(s)[0];
-
-       if (typeof LivereTower === 'function') { return; }
-
-       j = d.createElement(s);
-       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-       j.async = true;
-
-       e.parentNode.insertBefore(j, e);
-   })(document, 'script');
-</script>
-<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
-</div>
-<!-- City�氲װ��������� -->
-   
-  
-  
-  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -477,9 +272,9 @@ public:
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: true,
 		toc_hide_index: true,
