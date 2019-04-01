@@ -197,23 +197,15 @@ var _hmt = _hmt || [];
       
         <h3 id="词的分布式表示"><a class="markdownIt-Anchor" href="#词的分布式表示"></a> 词的分布式表示</h3>
 <h4 id="基于矩阵的分布表示"><a class="markdownIt-Anchor" href="#基于矩阵的分布表示"></a> 基于矩阵的分布表示</h4>
-<ol>
-<li>
-<p>基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属于基于矩阵的分布表示。</p>
-</li>
-<li>
-<p>基于聚类的分布表示。类似LDA。</p>
-</li>
-<li>
-<p>基于神经网络的分布表示，词嵌入（ word embedding）基于神经网络的分布表示一般称为词向量、词嵌入（ word embedding）或分布式表示（ distributed representation）。</p>
-</li>
-</ol>
+<p>1.基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属于基于矩阵的分布表示。</p>
+<p>2.基于聚类的分布表示。类似LDA。</p>
+<p>3.基于神经网络的分布表示，词嵌入（ word embedding）基于神经网络的分布表示一般称为词向量、词嵌入（ word embedding）或分布式表示（ distributed representation）。</p>
 <p>神经网络词向量表示技术通过神经网络技术对上下文，以及上下文与目标词之间的关系进行建模。由于神经网络较为灵活，这类方法的最大优势在于可以表示复杂的上下文。在前面基于矩阵的分布表示方法中，最常用的上下文是词。如果使用包含词序信息的 n-gram 作为上下文，当 n 增加时， n-gram 的总数会呈指数级增长，此时会遇到维数灾难问题。而神经网络在表示 n-gram 时，可以通过一些组合方式对 n 个词进行组合，参数个数仅以线性速度增长。有了这一优势，神经网络模型可以对更复杂的上下文进行建模，在词向量中包含更丰富的语义信息。</p>
 <h3 id="词嵌入-word-embedding"><a class="markdownIt-Anchor" href="#词嵌入-word-embedding"></a> 词嵌入（ word embedding）</h3>
 <h4 id="概念"><a class="markdownIt-Anchor" href="#概念"></a> 概念</h4>
 <p>基于神经网络的分布表示又称为词向量、词嵌入，神经网络词向量模型与其它分布表示方法一样，均基于分布假说，核心依然是上下文的表示以及上下文与目标词之间的关系的建模。为了选择一种模型刻画某个词（下文称“目标词”）与其上下文之间的关系，我们需要在词向量中capture到一个词的上下文信息。同时，上面我们恰巧提到了统计语言模型正好具有捕捉上下文信息的能力。那么构建上下文与目标词之间的关系，最自然的一种思路就是使用语言模型。从历史上看，早期的词向量只是神经网络语言模型的副产品。</p>
 <h4 id="理解"><a class="markdownIt-Anchor" href="#理解"></a> 理解</h4>
-<p>one-hot表示法具有维度过大的缺点，那么现在将vector做一些改进：1、将vector每一个元素由整形改为浮点型，变为整个实数范围的表示；2、将原来稀疏的巨大维度压缩嵌入到一个更小维度的空间。如图示</p>
+<p>one-hot表示法具有维度过大的缺点，那么现在将vector做一些改进：1、将vector每一个元素由整形改为浮点型，变为整个实数范围的表示；2、将原来稀疏的巨大维度压缩嵌入到一个更小维度的空间。如图</p>
 <p><img src="https://findmecoder.github.io/blog-pic/nlp/1.jpg" alt=""></p>
 <h3 id="神经网络语言模型与word2vec"><a class="markdownIt-Anchor" href="#神经网络语言模型与word2vec"></a> 神经网络语言模型与word2vec</h3>
 <p>通过神经网络训练语言模型可以得到词向量，那么，究竟有哪些类型的神经网络语言模型呢？个人所知，大致有这么些个：</p>
@@ -229,26 +221,12 @@ var _hmt = _hmt || [];
 <p><strong>词向量既能够降低维度，又能够capture到当前词在本句子中上下文的信息（表现为前后距离关系），那么我们对其用来表示语言句子词语作为NN的输入是非常自信与满意的。</strong></p>
 <p>词向量，有时候翻译为词嵌入（word embeddings），又可以称作distributed word representation[1], 最初起源是神经网络语言模型（Neural Networks Language Models）， <strong>Word2Vec</strong>是目前最常见的<strong>word embeddings</strong>，另外一种著名word embeddings是<strong>GloVe</strong>。</p>
 <p>**LDA（Latent Dirichlet Allocation）**是主题模型（Topic Models）的一种计算方法，和词向量并无直接关系，不过如果扯上另外一种topic model，<strong>LSA（Latent Semantic Analysis）</strong>，那就有一些关系了：</p>
-<ol>
-<li>
-<p>LSA的核心技术是<strong>SVD</strong>，一种矩阵分解，而SVD一般在NLP中的使用并非是使用它分解的三个矩阵，而是合并右边两个矩阵。那么合并之后，<strong>左边</strong>的矩阵就可以视为<strong>word embeddings</strong>，而<strong>右边</strong>的矩阵可以视为当它是<strong>context时候的embeddings</strong>。当然，一般的矩阵分解， 比如NMF，也可以得到word embeddings。</p>
-</li>
-<li>
-<p>而word2vec一再被人证明，从结果看，是一个<strong>全局PPMI（共现）矩阵</strong>的分解。某种意义讲，word embeddings可以理解是传统矩阵分解的一个加速版本。另外LDA和word embeddings还是可以有点联系，比如加入LDA的结果作为word embeddings的输入，来增强文章分类效果。</p>
-</li>
-<li>
-<p>LDA的作用之一是通过对<strong>doc-word</strong>矩阵进行建模抽出<strong>doc-topic</strong>和<strong>topic-word</strong>两个分布。而<strong>word2vec</strong>其实是分解了<strong>word-context</strong>矩阵。其实都是对一个**“A”-“B”**矩阵进行建模。那么LDA自然也可以用于对word-context矩阵进行建模，而word2vec也可以对doc-word矩阵做分解。</p>
-</li>
-</ol>
+<p>1.LSA的核心技术是<strong>SVD</strong>，一种矩阵分解，而SVD一般在NLP中的使用并非是使用它分解的三个矩阵，而是合并右边两个矩阵。那么合并之后，<strong>左边</strong>的矩阵就可以视为<strong>word embeddings</strong>，而<strong>右边</strong>的矩阵可以视为当它是<strong>context时候的embeddings</strong>。当然，一般的矩阵分解， 比如NMF，也可以得到word embeddings。</p>
+<p>2.而word2vec一再被人证明，从结果看，是一个<strong>全局PPMI（共现）矩阵</strong>的分解。某种意义讲，word embeddings可以理解是传统矩阵分解的一个加速版本。另外LDA和word embeddings还是可以有点联系，比如加入LDA的结果作为word embeddings的输入，来增强文章分类效果。</p>
+<p>3.LDA的作用之一是通过对<strong>doc-word</strong>矩阵进行建模抽出<strong>doc-topic</strong>和<strong>topic-word</strong>两个分布。而<strong>word2vec</strong>其实是分解了<strong>word-context</strong>矩阵。其实都是对一个**“A”-“B”**矩阵进行建模。那么LDA自然也可以用于对word-context矩阵进行建模，而word2vec也可以对doc-word矩阵做分解。</p>
 <h4 id="区别"><a class="markdownIt-Anchor" href="#区别"></a> 区别</h4>
-<ol>
-<li>
-<p>Word2vec用来生成各个词语的词向量，而LDA是生成文章的主题及其概率分布。其实两者没什么关系。</p>
-</li>
-<li>
-<p>词向量所体现的是semantic和syntactic这些 low-level的信息，而LDA的主题词体现的是文章topic这一high-level层的信息。</p>
-</li>
-</ol>
+<p>1.Word2vec用来生成各个词语的词向量，而LDA是生成文章的主题及其概率分布。其实两者没什么关系。</p>
+<p>2.词向量所体现的是semantic和syntactic这些 low-level的信息，而LDA的主题词体现的是文章topic这一high-level层的信息。</p>
 
       
 
