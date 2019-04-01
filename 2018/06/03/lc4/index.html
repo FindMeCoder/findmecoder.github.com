@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Binary Tree Level Order Traversal | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
+  <meta name="description" content="Binary Tree Level Order Traversal I描述Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).For example: Given binary tree {3,9,20,#,#,15,">
 <meta name="keywords" content="LeetCode,算法,树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Binary Tree Level Order Traversal">
 <meta property="og:url" content="http://yoursite.com/2018/06/03/lc4/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
+<meta property="og:description" content="Binary Tree Level Order Traversal I描述Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).For example: Given binary tree {3,9,20,#,#,15,">
 <meta property="og:locale" content="default">
 <meta property="og:updated_time" content="2019-03-26T10:29:39.321Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Binary Tree Level Order Traversal">
-<meta name="twitter:description" content="Binary Tree Level Order Traversal I  描述 Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level). For example: Given binary tree {3,9,20,#,">
+<meta name="twitter:description" content="Binary Tree Level Order Traversal I描述Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).For example: Given binary tree {3,9,20,#,#,15,">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -198,191 +198,150 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="binary-tree-level-order-traversal-i"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-i"></a> Binary Tree Level Order Traversal I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).<br>
-For example: Given binary tree {3,9,20,#,#,15,7},<br>
-return its level order traversal as:<br>
-[<br>
-[3],<br>
-[9,20],<br>
-[15,7]<br>
-]</p>
-<h3 id="递归版"><a class="markdownIt-Anchor" href="#递归版"></a> 递归版</h3>
-<p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
+        <h2 id="Binary-Tree-Level-Order-Traversal-I"><a href="#Binary-Tree-Level-Order-Traversal-I" class="headerlink" title="Binary Tree Level Order Traversal I"></a>Binary Tree Level Order Traversal I</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).<br>For example: Given binary tree {3,9,20,#,#,15,7},<br>return its level order traversal as:<br>[<br>[3],<br>[9,20],<br>[15,7]<br>]</p>
+<h3 id="递归版"><a href="#递归版" class="headerlink" title="递归版"></a>递归版</h3><p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt;&gt; result;
-		traverse(root, 1, result);
-		return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
-		if (!root) return;
-		if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-		result[level-1].push_back(root-&gt;val);
-		traverse(root-&gt;left, level+1, result);
-		traverse(root-&gt;right, level+1, result);
-	}
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        traverse(root, 1, result);
+        return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+        if (!root) return;
+        if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+        result[level-1].push_back(root-&gt;val);
+        traverse(root-&gt;left, level+1, result);
+        traverse(root-&gt;right, level+1, result);
+    }
+};
+</code></pre><h3 id="迭代版"><a href="#迭代版" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if(root == nullptr) return result;
+        queue&lt;TreeNode*&gt; current, next;
+        vector&lt;int&gt; level; // elments in level level
+        current.push(root);
+        while (!current.empty())
+        {
+            while (!current.empty()) 
+            {
+            TreeNode* node = current.front();
+            current.pop();
+            level.push_back(node-&gt;val);
+            if (node-&gt;left != nullptr) next.push(node-&gt;left);
+            if (node-&gt;right != nullptr) next.push(node-&gt;right);
+            }
+            result.push_back(level);
+            level.clear();
+            swap(next, current);
+        }
+        return result;
+    }
+};
+</code></pre><h2 id="Binary-Tree-Level-Order-Traversal-II"><a href="#Binary-Tree-Level-Order-Traversal-II" class="headerlink" title="Binary Tree Level Order Traversal II"></a>Binary Tree Level Order Traversal II</h2><h3 id="描述-1"><a href="#描述-1" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the bottom-up level order traversal of its nodes’ values. (ie, from left to right,level by level from leaf to root).<br>For example: Given binary tree {3,9,20,#,#,15,7}<br>return its bottom-up level order traversal as:<br>[<br>[15,7]<br>[9,20],<br>[3],<br>]</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>在上一题的基础上，reverse() 一下即可。</p>
+<h3 id="递归版-1"><a href="#递归版-1" class="headerlink" title="递归版"></a>递归版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrderBottom(TreeNode *root) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        traverse(root, 1, result);
+        std::reverse(result.begin(), result.end()); // 比上一题多此一行
+        return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+        if (!root) return;
+        if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+        result[level-1].push_back(root-&gt;val);
+        traverse(root-&gt;left, level+1, result);
+        traverse(root-&gt;right, level+1, result);
+    }
+};
+</code></pre><h3 id="迭代版-1"><a href="#迭代版-1" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if(root == nullptr) return result;
+        queue&lt;TreeNode*&gt; current, next;
+        vector&lt;int&gt; level; // elments in level level
+        current.push(root);
+        while (!current.empty())
+        {
+            while (!current.empty()) 
+            {
+            TreeNode* node = current.front();
+            current.pop();
+            level.push_back(node-&gt;val);
+            if (node-&gt;left != nullptr) next.push(node-&gt;left);
+            if (node-&gt;right != nullptr) next.push(node-&gt;right);
+            }
+            result.push_back(level);
+            level.clear();
+            swap(next, current);
+        }
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+</code></pre><h2 id="Binary-Tree-Zigzag-Level-Order-Traversal"><a href="#Binary-Tree-Zigzag-Level-Order-Traversal" class="headerlink" title="Binary Tree Zigzag Level Order Traversal"></a>Binary Tree Zigzag Level Order Traversal</h2><h3 id="描述-2"><a href="#描述-2" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the zigzag level order traversal of its nodes’ values. (ie, from left to right,<br>then right to left for the next level and alternate between).<br>For example: Given binary tree 3,9,20,#,#,15,7<br>return its zigzag level order traversal as:<br>[<br>[3],<br>[20,9],<br>[15,7]<br>]</p>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>广度优先遍历，用一个 bool 记录是从左到右还是从右到左，每一层结束就翻转一下。</p>
+<h3 id="递归版-2"><a href="#递归版-2" class="headerlink" title="递归版"></a>递归版</h3><p>递归版，时间复杂度 O(n)，空间复杂度 O(n)</p>
+<pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+    vector&lt;vector&lt;int&gt;&gt; result;
+    traverse(root, 1, result, true);
+    return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result,bool left_to_right) {
+    if (!root) return;
+    if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+    if (left_to_right)
+        result[level-1].push_back(root-&gt;val);
+    else
+        result[level-1].insert(result[level-1].begin(), root-&gt;val);
+        traverse(root-&gt;left, level+1, result, !left_to_right);
+        traverse(root-&gt;right, level+1, result, !left_to_right);
+    }
+};
+</code></pre><h3 id="迭代版-2"><a href="#迭代版-2" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if (nullptr == root) return result;
+        queue&lt;TreeNode*&gt; q;
+        bool left_to_right = true; //left to right
+        vector&lt;int&gt; level; // one level&#39;s elements
+        q.push(root);
+        q.push(nullptr); // level separator
+        while (!q.empty()) {
+            TreeNode *cur = q.front();
+            q.pop();
+            if (cur) {
+            level.push_back(cur-&gt;val);
+            if (cur-&gt;left) q.push(cur-&gt;left);
+            if (cur-&gt;right) q.push(cur-&gt;right);
+            } else {
+            if (left_to_right) {
+                result.push_back(level);
+                } else {
+                    reverse(level.begin(), level.end());
+                    result.push_back(level);
+                }
+                    level.clear();
+                    left_to_right = !left_to_right;
+                    if (q.size() &gt; 0) 
+                        q.push(nullptr);
+                }
+            }
+        return result;
+    }
 };
 </code></pre>
-<h3 id="迭代版"><a class="markdownIt-Anchor" href="#迭代版"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if(root == nullptr) return result;
-		queue&lt;TreeNode*&gt; current, next;
-		vector&lt;int&gt; level; // elments in level level
-		current.push(root);
-		while (!current.empty())
-		{
-			while (!current.empty()) 
-			{
-			TreeNode* node = current.front();
-			current.pop();
-			level.push_back(node-&gt;val);
-			if (node-&gt;left != nullptr) next.push(node-&gt;left);
-			if (node-&gt;right != nullptr) next.push(node-&gt;right);
-			}
-			result.push_back(level);
-			level.clear();
-			swap(next, current);
-		}
-		return result;
-	}
-};
-</code></pre>
-<h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Given a binary tree, return the bottom-up level order traversal of its nodes’ values. (ie, from left to right,level by level from leaf to root).<br>
-For example: Given binary tree {3,9,20,#,#,15,7}<br>
-return its bottom-up level order traversal as:<br>
-[<br>
-[15,7]<br>
-[9,20],<br>
-[3],<br>
-]</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>在上一题的基础上，reverse() 一下即可。</p>
-<h3 id="递归版-2"><a class="markdownIt-Anchor" href="#递归版-2"></a> 递归版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrderBottom(TreeNode *root) {
-		vector&lt;vector&lt;int&gt;&gt; result;
-		traverse(root, 1, result);
-		std::reverse(result.begin(), result.end()); // 比上一题多此一行
-		return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
-		if (!root) return;
-		if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-		result[level-1].push_back(root-&gt;val);
-		traverse(root-&gt;left, level+1, result);
-		traverse(root-&gt;right, level+1, result);
-	}
-};
-</code></pre>
-<h3 id="迭代版-2"><a class="markdownIt-Anchor" href="#迭代版-2"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if(root == nullptr) return result;
-		queue&lt;TreeNode*&gt; current, next;
-		vector&lt;int&gt; level; // elments in level level
-		current.push(root);
-		while (!current.empty())
-		{
-			while (!current.empty()) 
-			{
-			TreeNode* node = current.front();
-			current.pop();
-			level.push_back(node-&gt;val);
-			if (node-&gt;left != nullptr) next.push(node-&gt;left);
-			if (node-&gt;right != nullptr) next.push(node-&gt;right);
-			}
-			result.push_back(level);
-			level.clear();
-			swap(next, current);
-		}
-		reverse(result.begin(), result.end());
-		return result;
-	}
-};
-</code></pre>
-<h2 id="binary-tree-zigzag-level-order-traversal"><a class="markdownIt-Anchor" href="#binary-tree-zigzag-level-order-traversal"></a> Binary Tree Zigzag Level Order Traversal</h2>
-<h3 id="描述-3"><a class="markdownIt-Anchor" href="#描述-3"></a> 描述</h3>
-<p>Given a binary tree, return the zigzag level order traversal of its nodes’ values. (ie, from left to right,<br>
-then right to left for the next level and alternate between).<br>
-For example: Given binary tree 3,9,20,#,#,15,7<br>
-return its zigzag level order traversal as:<br>
-[<br>
-[3],<br>
-[20,9],<br>
-[15,7]<br>
-]</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>广度优先遍历，用一个 bool 记录是从左到右还是从右到左，每一层结束就翻转一下。</p>
-<h3 id="递归版-3"><a class="markdownIt-Anchor" href="#递归版-3"></a> 递归版</h3>
-<p>递归版，时间复杂度 O(n)，空间复杂度 O(n)</p>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
-	vector&lt;vector&lt;int&gt;&gt; result;
-	traverse(root, 1, result, true);
-	return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result,bool left_to_right) {
-	if (!root) return;
-	if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-	if (left_to_right)
-		result[level-1].push_back(root-&gt;val);
-	else
-		result[level-1].insert(result[level-1].begin(), root-&gt;val);
-		traverse(root-&gt;left, level+1, result, !left_to_right);
-		traverse(root-&gt;right, level+1, result, !left_to_right);
-	}
-};
-</code></pre>
-<h3 id="迭代版-3"><a class="markdownIt-Anchor" href="#迭代版-3"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if (nullptr == root) return result;
-		queue&lt;TreeNode*&gt; q;
-		bool left_to_right = true; //left to right
-		vector&lt;int&gt; level; // one level's elements
-		q.push(root);
-		q.push(nullptr); // level separator
-		while (!q.empty()) {
-			TreeNode *cur = q.front();
-			q.pop();
-			if (cur) {
-			level.push_back(cur-&gt;val);
-			if (cur-&gt;left) q.push(cur-&gt;left);
-			if (cur-&gt;right) q.push(cur-&gt;right);
-			} else {
-			if (left_to_right) {
-				result.push_back(level);
-				} else {
-					reverse(level.begin(), level.end());
-					result.push_back(level);
-				}
-					level.clear();
-					left_to_right = !left_to_right;
-					if (q.size() &gt; 0) 
-						q.push(nullptr);
-				}
-			}
-		return result;
-	}
-};</code></pre>
-
       
 
       
@@ -522,7 +481,7 @@ public:
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-level-order-traversal-i"><span class="toc-number">1.</span> <span class="toc-text"> Binary Tree Level Order Traversal I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版"><span class="toc-number">1.2.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版"><span class="toc-number">1.3.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-level-order-traversal-ii"><span class="toc-number">2.</span> <span class="toc-text"> Binary Tree Level Order Traversal II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-2"><span class="toc-number">2.3.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-2"><span class="toc-number">2.4.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#binary-tree-zigzag-level-order-traversal"><span class="toc-number">3.</span> <span class="toc-text"> Binary Tree Zigzag Level Order Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-3"><span class="toc-number">3.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-2"><span class="toc-number">3.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-3"><span class="toc-number">3.3.</span> <span class="toc-text"> 递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-3"><span class="toc-number">3.4.</span> <span class="toc-text"> 迭代版</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Binary-Tree-Level-Order-Traversal-I"><span class="toc-number">1.</span> <span class="toc-text">Binary Tree Level Order Traversal I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版"><span class="toc-number">1.2.</span> <span class="toc-text">递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版"><span class="toc-number">1.3.</span> <span class="toc-text">迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Binary-Tree-Level-Order-Traversal-II"><span class="toc-number">2.</span> <span class="toc-text">Binary Tree Level Order Traversal II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-1"><span class="toc-number">2.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">2.2.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-1"><span class="toc-number">2.3.</span> <span class="toc-text">递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-1"><span class="toc-number">2.4.</span> <span class="toc-text">迭代版</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Binary-Tree-Zigzag-Level-Order-Traversal"><span class="toc-number">3.</span> <span class="toc-text">Binary Tree Zigzag Level Order Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">3.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-1"><span class="toc-number">3.2.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#递归版-2"><span class="toc-number">3.3.</span> <span class="toc-text">递归版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代版-2"><span class="toc-number">3.4.</span> <span class="toc-text">迭代版</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -691,10 +650,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -707,6 +662,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">树</a>
               </li>
              
@@ -715,11 +674,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
               </li>
              
               <li class="article-tag-list-item">

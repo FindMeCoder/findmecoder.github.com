@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Remove Duplicates from Sorted Array | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+  <meta name="description" content="Search in Rotated Sorted Array I描述Suppose a sorted array is rotated at some pivot unknown to you beforehand.(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).You are given a target value to search. If">
 <meta name="keywords" content="LeetCode,数组,算法,二分法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Remove Duplicates from Sorted Array">
 <meta property="og:url" content="http://yoursite.com/2018/06/03/lc2/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+<meta property="og:description" content="Search in Rotated Sorted Array I描述Suppose a sorted array is rotated at some pivot unknown to you beforehand.(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).You are given a target value to search. If">
 <meta property="og:locale" content="default">
 <meta property="og:updated_time" content="2019-03-25T15:07:48.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Remove Duplicates from Sorted Array">
-<meta name="twitter:description" content="Search in Rotated Sorted Array I  描述 Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2). You are given a target value to searc">
+<meta name="twitter:description" content="Search in Rotated Sorted Array I描述Suppose a sorted array is rotated at some pivot unknown to you beforehand.(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).You are given a target value to search. If">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -198,80 +198,64 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
+        <h2 id="Search-in-Rotated-Sorted-Array-I"><a href="#Search-in-Rotated-Sorted-Array-I" class="headerlink" title="Search in Rotated Sorted Array I"></a>Search in Rotated Sorted Array I</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>You are given a target value to search. If found in the array return its index, otherwise return -1.<br>You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>二分查找，难度主要在于左右边界的确定。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-		return -1;
-	}
+    int search(int A[], int n, int target) {
+        int first = 0, last = n;
+        while (first != last) {
+            const int mid = (first + last) / 2;
+            if (A[mid] == target)
+                return mid;
+            if (A[first] &lt;= A[mid]) {
+                if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+                    last = mid;
+                else    
+                    first = mid + 1;
+            } 
+            else {
+            if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+                    first = mid + 1;
+                else
+                    last = mid;
+            }
+        }
+        return -1;
+    }
 };
-</code></pre>
-<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
-Would this affect the run-time complexity? How and why?<br>
-Write a function to determine if a given target is in the array.</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
-如 [1,3,1,1,1]。<br>
-如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
+</code></pre><h2 id="Search-in-Rotated-Sorted-Array-II"><a href="#Search-in-Rotated-Sorted-Array-II" class="headerlink" title="Search in Rotated Sorted Array II"></a>Search in Rotated Sorted Array II</h2><h3 id="描述-1"><a href="#描述-1" class="headerlink" title="描述"></a>描述</h3><p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>Would this affect the run-time complexity? How and why?<br>Write a function to determine if a given target is in the array.</p>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>如 [1,3,1,1,1]。<br>如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
 <p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
 <p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
-<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
+<h3 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h3><p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	bool search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-				if (A[mid] == target)
-					return true;
-				if (A[first] &lt; A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else
-					first = mid + 1;
-				} else if (A[first] &gt; A[mid]) {
-				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			} else
+    bool search(int A[], int n, int target) {
+        int first = 0, last = n;
+        while (first != last) {
+            const int mid = (first + last) / 2;
+                if (A[mid] == target)
+                    return true;
+                if (A[first] &lt; A[mid]) {
+                if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+                    last = mid;
+                else
+                    first = mid + 1;
+                } else if (A[first] &gt; A[mid]) {
+                if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+                    first = mid + 1;
+                else
+                    last = mid;
+            } else
 
-			first++;
-		}
-		return false;
-	}
-};</code></pre>
-
+            first++;
+        }
+        return false;
+    }
+};
+</code></pre>
       
 
       
@@ -377,11 +361,11 @@ public:
   
 <nav id="article-nav">
   
-    <a href="/2018/06/03/lc5/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/03/lc6/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Binary Tree Level Order Traversal
+          Remove Duplicates from Sorted Array
         
       </div>
     </a>
@@ -415,7 +399,7 @@ public:
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-i"><span class="toc-number">1.</span> <span class="toc-text"> Search in Rotated Sorted Array I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">1.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">1.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#search-in-rotated-sorted-array-ii"><span class="toc-number">2.</span> <span class="toc-text"> Search in Rotated Sorted Array II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-2"><span class="toc-number">2.1.</span> <span class="toc-text"> 描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-2"><span class="toc-number">2.2.</span> <span class="toc-text"> 分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码-2"><span class="toc-number">2.3.</span> <span class="toc-text"> 代码</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Search-in-Rotated-Sorted-Array-I"><span class="toc-number">1.</span> <span class="toc-text">Search in Rotated Sorted Array I</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述"><span class="toc-number">1.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-number">1.2.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码"><span class="toc-number">1.3.</span> <span class="toc-text">代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Search-in-Rotated-Sorted-Array-II"><span class="toc-number">2.</span> <span class="toc-text">Search in Rotated Sorted Array II</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#描述-1"><span class="toc-number">2.1.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-1"><span class="toc-number">2.2.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#代码-1"><span class="toc-number">2.3.</span> <span class="toc-text">代码</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -584,10 +568,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -600,6 +580,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">树</a>
               </li>
              
@@ -608,11 +592,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
               </li>
              
               <li class="article-tag-list-item">

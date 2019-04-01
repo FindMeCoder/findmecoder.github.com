@@ -8,13 +8,13 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>特征工程 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="主要内容   特征工程概述  特征归一化  高维组合特征及处理   正文  1. 特征工程概述 ​	数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征">
+  <meta name="description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
 <meta name="keywords" content="机器学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="特征工程">
 <meta property="og:url" content="http://yoursite.com/2018/06/01/ml1/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="主要内容   特征工程概述  特征归一化  高维组合特征及处理   正文  1. 特征工程概述 ​	数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征">
+<meta property="og:description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/1.jpg">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/ml/2.jpg">
@@ -23,7 +23,7 @@
 <meta property="og:updated_time" content="2019-03-30T03:02:14.863Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="特征工程">
-<meta name="twitter:description" content="主要内容   特征工程概述  特征归一化  高维组合特征及处理   正文  1. 特征工程概述 ​	数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征">
+<meta name="twitter:description" content="主要内容 特征工程概述特征归一化高维组合特征及处理 正文1. 特征工程概述​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占">
 <meta name="twitter:image" content="https://findmecoder.github.io/blog-pic/ml/1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -203,27 +203,20 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="主要内容"><a class="markdownIt-Anchor" href="#主要内容"></a> 主要内容</h2>
-<blockquote>
-<h4 id="特征工程概述"><a class="markdownIt-Anchor" href="#特征工程概述"></a> 特征工程概述</h4>
-<h4 id="特征归一化"><a class="markdownIt-Anchor" href="#特征归一化"></a> 特征归一化</h4>
-<h4 id="高维组合特征及处理"><a class="markdownIt-Anchor" href="#高维组合特征及处理"></a> 高维组合特征及处理</h4>
-</blockquote>
-<h2 id="正文"><a class="markdownIt-Anchor" href="#正文"></a> 正文</h2>
-<h3 id="1-特征工程概述"><a class="markdownIt-Anchor" href="#1-特征工程概述"></a> 1. 特征工程概述</h3>
-<p>​	数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占有非常重要的作用，一般认为括特征构建、特征提取、特征选择三个部分。特征构建比较麻烦，需要一定的经验。 特征提取与特征选择都是为了从原始特征中找出最有效的特征。它们之间的区别是特征提取强调通过特征转换的方式得到一组具有明显物理或统计意义的特征；而特征选择是从特征集合中挑选一组具有明显物理或统计意义的特征子集。两者都能帮助减少特征的维度、数据冗余，特征提取有时能发现更有意义的特征属性，特征选择的过程经常能表示出每个特征的重要性对于模型构建的重要性。本文主要尝试总结几个常用的特征提取和特征选择的方法。</p>
+        <h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><blockquote>
+<h4 id="特征工程概述"><a href="#特征工程概述" class="headerlink" title="特征工程概述"></a>特征工程概述</h4><h4 id="特征归一化"><a href="#特征归一化" class="headerlink" title="特征归一化"></a>特征归一化</h4><h4 id="高维组合特征及处理"><a href="#高维组合特征及处理" class="headerlink" title="高维组合特征及处理"></a>高维组合特征及处理</h4></blockquote>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="1-特征工程概述"><a href="#1-特征工程概述" class="headerlink" title="1. 特征工程概述"></a>1. 特征工程概述</h3><p>​    数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占有非常重要的作用，一般认为括特征构建、特征提取、特征选择三个部分。特征构建比较麻烦，需要一定的经验。 特征提取与特征选择都是为了从原始特征中找出最有效的特征。它们之间的区别是特征提取强调通过特征转换的方式得到一组具有明显物理或统计意义的特征；而特征选择是从特征集合中挑选一组具有明显物理或统计意义的特征子集。两者都能帮助减少特征的维度、数据冗余，特征提取有时能发现更有意义的特征属性，特征选择的过程经常能表示出每个特征的重要性对于模型构建的重要性。本文主要尝试总结几个常用的特征提取和特征选择的方法。</p>
 <p><img src="https://findmecoder.github.io/blog-pic/ml/1.jpg" alt=""></p>
-<h3 id="2-特征归一化"><a class="markdownIt-Anchor" href="#2-特征归一化"></a> 2. 特征归一化</h3>
-<p>​	对数值类型的特征做归一化可以将所有的特征都统一到一个大致相同的数值区间内。最常用的方法主要有以下两种。</p>
+<h3 id="2-特征归一化"><a href="#2-特征归一化" class="headerlink" title="2. 特征归一化"></a>2. 特征归一化</h3><p>​    对数值类型的特征做归一化可以将所有的特征都统一到一个大致相同的数值区间内。最常用的方法主要有以下两种。</p>
 <p>（1）线性函数归一化（Min-Max Scaling）。它对原始数据进行线性变换，使结果映射到[0, 1]的范围，实现对原始数据的等比缩放。归一化公式如下。</p>
 <p><img src="https://findmecoder.github.io/blog-pic/ml/2.jpg" alt=""></p>
 <p>其中X为原始数据，Xmax、Xmin分别为数据最大值和最小值</p>
 <p>（2）零均值归一化（Z-Score Normalization）。它会将原始数据映射到均值为0、标准差为1的分布上。具体来说，假设原始特征的均值为μ、标准差为σ，那么归一化公式定义为</p>
 <p><img src="https://findmecoder.github.io/blog-pic/ml/3.jpg" alt=""></p>
-<p>​	为什么需要对数值型特征做归一化呢？我们不妨借助随机梯度下降的实例来说明归一化的重要性。假设有两种数值型特征，x1的取值范围为 [0, 10]，x2的取值范围为[0, 3]，于是可以构造一个目标函数符合图1.1（a）中的等值图。在学习速率相同的情况下，x1的更新速度会大于x2，需要较多的迭代才能找到最优解。如果将x1和x2归一化到相同的数值区间后，优化目标的等值图会变成图1.1（b）中的圆形，x1和x2的更新速度变得更为一致，容易更快地通过梯度下降找到最优解。</p>
+<p>​    为什么需要对数值型特征做归一化呢？我们不妨借助随机梯度下降的实例来说明归一化的重要性。假设有两种数值型特征，x1的取值范围为 [0, 10]，x2的取值范围为[0, 3]，于是可以构造一个目标函数符合图1.1（a）中的等值图。在学习速率相同的情况下，x1的更新速度会大于x2，需要较多的迭代才能找到最优解。如果将x1和x2归一化到相同的数值区间后，优化目标的等值图会变成图1.1（b）中的圆形，x1和x2的更新速度变得更为一致，容易更快地通过梯度下降找到最优解。</p>
 <p><img src="https://findmecoder.github.io/blog-pic/ml/4.jpg" alt=""></p>
-<p>​										图1.1 数据归一化对梯度下降收敛速度产生的影响</p>
-<p>​	当然，数据归一化并不是万能的。在实际应用中，通过梯度下降法求解的模型通常是需要归一化的，包括线性回归、逻辑回归、支持向量机、神经网络等模型。但对于决策树模型则并不适用，以C4.5为例，决策树在进行节点分裂时主要依据数据集D关于特征x的信息增益比，而信息增益比跟特征是否经过归一化是无关的，因为归一化并不会改变样本在特征x上的信息增益。</p>
+<p>​                                        图1.1 数据归一化对梯度下降收敛速度产生的影响</p>
+<p>​    当然，数据归一化并不是万能的。在实际应用中，通过梯度下降法求解的模型通常是需要归一化的，包括线性回归、逻辑回归、支持向量机、神经网络等模型。但对于决策树模型则并不适用，以C4.5为例，决策树在进行节点分裂时主要依据数据集D关于特征x的信息增益比，而信息增益比跟特征是否经过归一化是无关的，因为归一化并不会改变样本在特征x上的信息增益。</p>
 
       
 
@@ -328,8 +321,8 @@ var _hmt = _hmt || [];
     </a>
   
   
-    <a href="/2018/04/02/c++5/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">epoll的理解</div>
+    <a href="/2018/03/02/c++2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">c++中const关键字总结</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -356,7 +349,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#主要内容"><span class="toc-number">1.</span> <span class="toc-text"> 主要内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#特征工程概述"><span class="toc-number">1.0.1.</span> <span class="toc-text"> 特征工程概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#特征归一化"><span class="toc-number">1.0.2.</span> <span class="toc-text"> 特征归一化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#高维组合特征及处理"><span class="toc-number">1.0.3.</span> <span class="toc-text"> 高维组合特征及处理</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#正文"><span class="toc-number">2.</span> <span class="toc-text"> 正文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-特征工程概述"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 特征工程概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-特征归一化"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. 特征归一化</span></a></li></ol></li>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#主要内容"><span class="toc-number">1.</span> <span class="toc-text">主要内容</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#特征工程概述"><span class="toc-number">1.0.1.</span> <span class="toc-text">特征工程概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#特征归一化"><span class="toc-number">1.0.2.</span> <span class="toc-text">特征归一化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#高维组合特征及处理"><span class="toc-number">1.0.3.</span> <span class="toc-text">高维组合特征及处理</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#正文"><span class="toc-number">2.</span> <span class="toc-text">正文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-特征工程概述"><span class="toc-number">2.1.</span> <span class="toc-text">1. 特征工程概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-特征归一化"><span class="toc-number">2.2.</span> <span class="toc-text">2. 特征归一化</span></a></li></ol></li>
                     </div>
                 </span>
             </div>
@@ -525,10 +518,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -541,6 +530,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">树</a>
               </li>
              
@@ -549,11 +542,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
               </li>
              
               <li class="article-tag-list-item">

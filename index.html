@@ -175,6 +175,571 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-c++5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/02/c++5/">epoll的理解</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/02/c++5/" class="archive-article-date">
+  	<time datetime="2018-10-02T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。不管是文件，还是套接字，还是管道，我们都可以把他们看作流。之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从socket读如数据，但是服务器还没有把数据传回来），这时候该怎么办？</p>
+<p>阻塞。阻塞是个什么概念呢？比如某个时候你在等快递，但是你不知道快递什么时候过来，而且你没有别的事可以干（或者说接下来的事要等快递来了才能做）；那么你可以去睡觉了，因为你知道快递把货送来时一定会给你打个电话（假定一定能叫醒你）。</p>
+<p>非阻塞忙轮询。接着上面等快递的例子，如果用忙轮询的方法，那么你需要知道快递员的手机号，然后每分钟给他挂个电话：“你到了没？”</p>
+<p>为了了解阻塞是如何进行的，我们来讨论缓冲区，以及内核缓冲区，最终把I/O事件解释清楚。缓冲区的引入是为了减少频繁I/O操作而引起频繁的系统调用（你知道它很慢的），当你操作一个流时，更多的是以缓冲区为单位进行操作，这是相对于用户空间而言。对于内核来说，也需要缓冲区。假设有一个管道，进程A为管道的写入方，Ｂ为管道的读出方。</p>
+<p>假设一开始内核缓冲区是空的，B作为读出方，被阻塞着。然后首先A往管道写入，这时候内核缓冲区由空的状态变到非空状态，内核就会产生一个事件告诉Ｂ该醒来了，这个事件姑且称之为“缓冲区非空”。</p>
+<p>但是“缓冲区非空”事件通知B后，B却还没有读出数据；且内核许诺了不能把写入管道中的数据丢掉这个时候，Ａ写入的数据会滞留在内核缓冲区中，如果内核也缓冲区满了，B仍未开始读数据，最终内核缓冲区会被填满，这个时候会产生一个I/O事件，告诉进程A，你该等等（阻塞）了，我们把这个事件定义为“缓冲区满”。</p>
+<p>假设后来Ｂ终于开始读数据了，于是内核的缓冲区空了出来，这时候内核会告诉A，内核缓冲区有空位了，你可以从长眠中醒来了，继续写数据了，我们把这个事件叫做“缓冲区非满”。</p>
+<p>也许事件Y1已经通知了A，但是A也没有数据写入了，而Ｂ继续读出数据，知道内核缓冲区空了。这个时候内核就告诉B，你需要阻塞了！，我们把这个时间定为“缓冲区空”。</p>
+<p>然后我们来说说阻塞I/O的缺点。但是阻塞I/O模式下，一个线程只能处理一个流的I/O事件。如果想要同时处理多个流，要么多进程(fork)，要么多线程(pthread_create)，很不幸这两种方法效率都不高。于是再来考虑非阻塞忙轮询的I/O方式，我们发现我们可以同时处理多个流了（把一个流从阻塞模式切换到非阻塞模式再此不予讨论）。</p>
+<p>我们只要不停的把所有流从头到尾问一遍，又从头开始。这样就可以处理多个流了，但这样的做法显然不好，因为如果所有的流都没有数据，那么只会白白浪费CPU。这里要补充一点，阻塞模式下，内核对于I/O事件的处理是阻塞或者唤醒，而非阻塞模式下则把I/O事件交给其他对象（后文介绍的select以及epoll）处理甚至直接忽略。</p>
+<p>为了避免CPU空转，可以引进了一个代理（一开始有一位叫做select的代理，后来又有一位叫做poll的代理，不过两者的本质是一样的）。这个代理比较厉害，可以同时观察许多流的I/O事件，在空闲的时候，会把当前线程阻塞掉，当有一个或多个流有I/O事件时，就从阻塞态中醒来，于是我们的程序就会轮询一遍所有的流（于是我们可以把“忙”字去掉了）。代码长这样:</p>
+<p>于是，如果没有I/O事件产生，我们的程序就会阻塞在select处。但是依然有个问题，我们从select那里仅仅知道了，有I/O事件发生了，但却并不知道是那几个流（可能有一个，多个，甚至全部），我们只能无差别轮询所有流，找出能读出数据，或者写入数据的流，对他们进行操作。但是使用select，我们有O(n)的无差别轮询复杂度，同时处理的流越多，每一次无差别轮询时间就越长。</p>
+<p><strong><em>说了这么多，终于能好好解释epoll了</em></strong></p>
+<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数，也有认为O(1)的，在讨论epoll的实现细节之前，先把epoll的相关操作列出。</p>
+<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。<br>此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数</p>
+<pre><code>epoll_create 创建一个epoll对象，一般epollfd = epoll_create()
+
+epoll_ctl （epoll_add/epoll_del的合体），往epoll对象中增加/删除某一个流的某一个事件比如
+
+epoll_ctl(epollfd, EPOLL_CTL_ADD, socket, EPOLLIN);//有缓冲区内有数据时epoll_wait返回
+
+epoll_ctl(epollfd, EPOLL_CTL_DEL, socket, EPOLLOUT);//缓冲区可写入时epoll_wait返回
+
+epoll_wait(epollfd,...)等待直到注册的事件发生
+</code></pre><p><strong><em>有了上边的讲解，那么以网络 IO 为代表的事件是如何从网卡到内核，最终通知进程做相关处理的？</em></strong></p>
+<p>epoll其实是更复杂的设计和实现，基本原理是一致的。下面以 TCP 新建连接为例子，描述这一内核的处理过程：</p>
+<ol>
+<li><p>网卡收到 SYN，触发内核中断，直接打断当前执行的进程，CPU 进行中断处理，最终将该 SYN 连接信息保存在相应 listen socket 的半连接队列里，并向对方发送 SYN-ACK，然后恢复运行被打断的进程。</p>
+</li>
+<li><p>进程执行完当前作业，调用 accept 系统调用（阻塞）继续处理新连接。accept 发现连接队列当前没有新连接后，于是在 listen socket 的 wait queue 的上注册唤醒自身进程的回调函数，然后内核将这个进程置为 Block 状态，并让出 CPU 执行其他 Ready 状态的进程。</p>
+</li>
+<li><p>网卡收到 ACK，继续触发内核中断，内核完成标准的三次握手，将连接从半连接队列移入连接队列，于是 listen socket 有可读事件，内核调用 listen socket 的 wait queue 的唤醒回调函数，将之前阻塞的 accept 进程置为 Ready 调度状态。</p>
+</li>
+<li><p>在内核下一个 CPU 调度窗口来临时，Ready 调度状态的 accept 进程被选中执行，发现连接队列有新连接，于是读取连接信息，并最终返回给用户态进程。</p>
+</li>
+</ol>
+<p>从上面过程可见，内核处理硬件事件是一个同步的过程，而把事件传递给用户进程是一个异步的过程。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">网络编程</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">epoll</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/02/c++5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-c++4" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/20/c++4/">stl空间配置器(allocator)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/20/c++4/" class="archive-article-date">
+  	<time datetime="2018-09-20T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="allocator-简述"><a href="#allocator-简述" class="headerlink" title="allocator 简述"></a>allocator 简述</h3><p>以vector为例，通常我们这样使用STL的容器：</p>
+<pre><code>#include &lt;vector&gt;
+int main()
+{
+    std::vector&lt;int&gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre><p>allocator是STL的重要组成，但是一般用户不怎么熟悉他，因为allocator隐藏在所有容器（包括vector）身后，默默完成内存配置与释放，对象构造和析构的工作。</p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/4.jpg" alt=""></p>
+<p>图中左边是用户代码，右边是STL内部。</p>
+<p>从用户代码<strong>std::vector<int> v</int></strong>;开始，<strong>vector</strong>的模板参数<strong>class T</strong>被替换为<strong>int</strong>，同时第二个模板参数因为没有指定，所以为默认模板参数，即<strong>allocator<int></int></strong>，这个vector对象v会在内部实例一个<strong>allocator<int></int></strong>的对象，用来管理内存。</p>
+<p>你注意到了，为什么allocator也需要接收这个模板参数T，管理内存应该不需要知道T的具体类型（int）吧？</p>
+<p>前面说了，allocator除了负责内存的分配和释放，还负责对象的构造和析构，知道类型才能调用对象的构造和析构函数。而且，对于分配内存，allocator接口设计中有类似于“为n个T类型的对象分配内存”这种批量操作，这就需要知道类型才能算出对象需要的空间了。</p>
+<p>你也注意到，容器vector的第二个参数有默认值，那么我们也可以为其指定一个其他的值？也就是说，我们自己按照STL标准实现一个allocator，就可以搭配STL里的容器使用了？</p>
+<p>确实是的，假设我们自己写了一个allocator，叫做my_alloc，就可以指定它来为vector分配空间：</p>
+<pre><code>#include &lt;vector&gt;
+template &lt;class T&gt;
+class my_alloc{
+// ...
+// 自己实现的空间分配器
+// ···
+};
+
+int main()
+{
+    std::vector&lt;int, my_alloc&lt;int&gt; &gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre><h3 id="allocator-标准接口"><a href="#allocator-标准接口" class="headerlink" title="allocator 标准接口"></a>allocator 标准接口</h3><p>STL是一个标准，只对接口进行规范，接口背后的实现可以有不同版本，所以目前流行的STL如Visual C++采用的P. J. Plauger 版本，GCC编译器采用的SGI STL版本等都是常见的STL。SGI STL是最流行的版本，我们主要关注SGI STL的allocator实现。</p>
+<p>这是STL标准要求的allocator必要接口：</p>
+<pre><code>// 以下几种自定义类型是一种type_traits技巧，暂时不需要了解
+allocator::value_type
+allocator::pointer
+allocator::const_pointer
+allocator::reference
+allocator::const_reference
+allocator::size_type
+allocator::difference
+
+// 一个嵌套的(nested)class template，class rebind&lt;U&gt;拥有唯一成员other，那是一个typedef，代表allocator&lt;U&gt;
+allocator::rebind
+
+allocator::allocator() // 默认构造函数
+allocator::allocator(const allocator&amp;) // 拷贝构造函数
+template &lt;class U&gt;allocator::allocator(const allocator&lt;U&gt;&amp;) // 泛化的拷贝构造函数
+allocator::~allocator() // 析构函数
+
+// 返回某个对象的地址，a.address(x)等同于&amp;x
+pointer allocator::address(reference x) const
+// 返回某个const对象的地址，a.address(x)等同于&amp;x
+const_pointer allocator::address(const_reference x) const
+
+// 配置空间，足以存储n个T对象。第二个参数是个提示。实现上可能会利用它来增进区域性(locality)，或完全忽略之
+pointer allocator::allocate(size_type n, const void* = 0)
+// 释放先前配置的空间
+void allocator::deallocate(pointer p, size_type n)
+
+// 返回可成功配置的最大量
+size_type allocator:maxsize() const
+
+// 调用对象的构造函数，等同于 new((void*)p) T(x)
+void allocator::construct(pointer p, const T&amp; x)
+// 调用对象的析构函数，等同于 p-&gt;~T()
+void allocator::destroy(pointer p)
+</code></pre><p>上面的标准接口实际只需要关注最后的<strong>allocate</strong>，<strong>deallocate</strong>，<strong>construct</strong>和<strong>destroy</strong>函数的实现即可。整个allocator最重要的函数就是这四个。从功能上，这四者可以简单理解为C++的<strong>::operator new</strong>和<strong>::operator delete</strong>，构造函数和析构函数，实际上，一个最简单的allocator就可以理解为对new，delete的简单封装,以及对构造函数和析构函数的直接调用。</p>
+<p>以下是书中给出的一个最简单的allocator实现，它是符合STL标准的。</p>
+<pre><code>#ifndef _MYALLOC_
+#define _MYALLOC_
+
+#include &lt;new&gt;
+#include &lt;cstddef&gt;
+#include &lt;cstdlib&gt;
+#include &lt;climits&gt;
+#include &lt;iostream&gt;
+
+namespace my_alloc
+{
+    // allocate的实际实现，简单封装new，当无法获得内存时，报错并退出
+    template &lt;class T&gt;
+    inline T* _allocate(ptrdiff_t size, T*) {
+        set_new_handler(0);
+        T* tmp = (T*)(::operator new((size_t)(size * sizeof(T))));
+        if (tmp == 0) {
+            cerr &lt;&lt; &quot;out of memory&quot; &lt;&lt; endl;
+            exit(1);
+        }
+        return tmp;
+    }
+
+    // deallocate的实际实现，简单封装delete
+    template &lt;class T&gt;
+    inline void _deallocate(T* buffer) { ::operator delete(buffer); }
+
+    // construct的实际实现，直接调用对象的构造函数
+    template &lt;class T1, class T2&gt;
+    inline void _construct(T1* p, const T2&amp; value) { new(p) T1(value); }
+
+    // destroy的实际实现，直接调用对象的析构函数
+    template &lt;class T&gt;
+    inline void _destroy(T* ptr) { ptr-&gt;~T(); }
+
+    template &lt;class T&gt;
+    class allocator {
+    public:
+        typedef T           value_type;
+        typedef T*          pointer;
+        typedef const T*    const_pointer;
+        typedef T&amp;          reference;
+        typedef const T&amp;    const_reference;
+        typedef size_t      size_type;
+        typedef ptrdiff_t   difference_type;
+
+        // 构造函数
+        allocator(){ return; }
+        template &lt;class U&gt;
+        allocator(const allocator&lt;U&gt;&amp; c){}
+
+        // rebind allocator of type U
+        template &lt;class U&gt;
+        struct rebind { typedef allocator&lt;U&gt; other; };
+
+        // allocate，deallocate，construct和destroy函数均调用上面的实际实现
+        // hint used for locality. ref.[Austern],p189
+        pointer allocate(size_type n, const void* hint = 0) {
+            return _allocate((difference_type)n, (pointer)0);
+        }
+        void deallocate(pointer p, size_type n) { _deallocate(p); }
+        void construct(pointer p, const T&amp; value) { _construct(p, value); }
+        void destroy(pointer p) { _destroy(p); }
+
+        pointer address(reference x) { return (pointer)&amp;x; }
+        const_pointer const_address(const_reference x) { return (const_pointer)&amp;x; }
+
+        size_type max_size() const { return size_type(UINT_MAX / sizeof(T)); }   
+    };
+} // end of namespace myalloc
+
+#endif // _MYALLOC_
+</code></pre><p>现在，我们可以使用自己编写的allocator来为vector分配空间：</p>
+<pre><code>#include &lt;vector&gt;
+int main()
+{
+    std::vector&lt;int, my_alloc::allocator&lt;int&gt; &gt; v;
+    // Do something;
+    return 0;
+}
+</code></pre><p><strong><em>然而，这样并不能通过编译（如果你使用的是GCC编译器），因为SGI STL的allocator并不完全符合STL规范，我们编写的符合规范的自然不能搭配使用，SGI STL版本的allocator具体实现在下文阐述。</em></strong></p>
+<h3 id="SGI-STL-标准配置器-std-allocator"><a href="#SGI-STL-标准配置器-std-allocator" class="headerlink" title="SGI STL 标准配置器(std::allocator)"></a>SGI STL 标准配置器(std::allocator)</h3><pre><code>#ifnedf DEFALLOC_H
+#define DEFALLOC_H
+
+#include &lt;new.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;iostream.h&gt;
+#include &lt;algobase.h&gt;
+
+template &lt;class T&gt;
+inline T* allocate(ptrdiff_t size, T*) {
+    set_new_handler(0);
+    T* tmp = (T*)(::operator new((size_t)(size * sizeof(T))));
+    if (tmp == 0) {
+        cerr &lt;&lt; &quot;out of memory&quot; &lt;&lt; endl;
+        exit(1);
+    }
+    return tmp;
+}
+
+template &lt;class T&gt;
+inline void deallocate(T* buffer) {
+    ::operator delete(buffer);
+}
+
+template &lt;class T&gt;
+class allocator {
+public:
+    typedef T value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T&amp; reference;
+    typedef const T&amp; const_reference;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+
+    pointer allocate(size_type n) { return ::allocate((difference_type)n, (pointer)0); }
+    void deallocate(pointer p) { ::deallocator(p); }
+    pointer address(reference x) { return (pointer)&amp;x; }
+    const_pointer const_address(const_reference x) { return (const_pointer)&amp;x; }
+    size_type init_page_size() {
+        return max(size_type(1), size_type(UINT_MAX/sizeof(T)));
+    }
+};
+
+class allocator&lt;void&gt; {
+public:
+    typedef void* pointer;
+}
+</code></pre><h3 id="SGI-STL-特殊配置器-std-alloc"><a href="#SGI-STL-特殊配置器-std-alloc" class="headerlink" title="SGI STL 特殊配置器(std::alloc)"></a>SGI STL 特殊配置器(std::alloc)</h3><p><img src="https://findmecoder.github.io/blog-pic/stl/5.jpg" alt=""></p>
+<p>我们可以看到，用户代码实例化一个vector对象，vector对象调用alloc的接口，注意，不同于之前标准的allocator，这里不需要实例化一个空间配置器，只需要调用alloc的静态函数就行了。</p>
+<p>std::alloc的接口与标准非常相似：</p>
+<pre><code>static T* allocate()函数负责空间配置，返回一个T对象大小的空间。
+static T* allocate(size_t)函数负责批量空间配置。
+static void deallocate(T*)函数负责空间释放。
+static void deallocate(T*,size_t)函数负责批量空间释放。
+</code></pre><p>在接口之下，我们看到还有两级配置器，上面的接口根据情况调用这两个配置器，第二级配置器实现了内存池和自由链表，当程序多次进行小空间的配置时，可以从内存池和自由链表中获取空间，减少系统调用，提升性能。当进行大空间的配置时，上面的接口直接调用第一级配置器。最终，它们都是用malloc()和free()来配置和释放空间。</p>
+<p>这样看起来std::alloc的结构还算清晰，但是实际实现还会出现多种边界情况，比如，当系统调用malloc()空间不足时，我们需要让第一级配置器来处理，这可能涉及从第二级配置器中回收已经缓存但还未使用的空间，事情就变得繁琐了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">STL</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/20/c++4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-c++3" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/15/c++3/">stl简介</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/15/c++3/" class="archive-article-date">
+  	<time datetime="2018-09-15T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在重新看了一遍侯捷的《STL源码剖析》，想分享几篇心得，目的是学习C++和泛型编程。</p>
+<h3 id="STL简介"><a href="#STL简介" class="headerlink" title="STL简介"></a>STL简介</h3><p>STL版本</p>
+<p>STL是一个标准，只规定了STL的接口，内部实现没有要求。STL有许多实现版本，PJ STL（被Visual C++采用），RW STL等。</p>
+<p>SGI STL版本注释丰富，结构清晰，可读性最强，同时它也被GCC采用，所以是最流行的版本。</p>
+<p>注意，SGI STL并不是原封不动的被用于GCC，所以在GCC中使用STL可能会和SGI STL有一些微小的区别。</p>
+<h3 id="STL组件"><a href="#STL组件" class="headerlink" title="STL组件"></a>STL组件</h3><p>STL分为六大组件：</p>
+<p><strong><em>容器</em></strong>(container)：常用数据结构，大致分为两类，序列容器，如vector，list，deque，关联容器，如set，map。在实现上，是类模板(class template)</p>
+<p><strong><em>迭代器</em></strong>(iterator)：一套访问容器的接口，行为类似于指针。它为不同算法提供的相对统一的容器访问方式，使得设计算法时无需关注过多关注数据。（“算法”指广义的算法，操作数据的逻辑代码都可认为是算法）。</p>
+<p><strong><em>算法</em></strong>(algorithm)：提供一套常用的算法，如sort，search，copy，erase … 在实现上，可以认为是一种函数模板(function template)。</p>
+<p><strong><em>配置器</em></strong>(allocator)：为容器提供空间配置和释放，对象构造和析构的服务，也是一个class template。<br>仿函数(functor)：作为函数使用的对象，用于泛化算法中的操作。</p>
+<p><strong><em>配接器</em></strong>(adapter)：将一种容器修饰为功能不同的另一种容器，如以容器vector为基础，在其上实现stack，stack的行为也是一种容器。这就是一种配接器。除此之外，还有迭代器配接器和仿函数配接器。</p>
+<h3 id="STL文件概览"><a href="#STL文件概览" class="headerlink" title="STL文件概览"></a>STL文件概览</h3><p>这是SGI STL(V3.3)的所有文件：</p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/2.jpg" alt=""></p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/1.jpg" alt=""></p>
+<p>大约可以将文件分三类：</p>
+<p>STL标准头文件（无文件后缀），如vector, deque, list, map, algorithm, functional </p>
+<p>SGI STL内部文件（STL的真正实现），如stl_vector.h, stl_deque.h, stl_list.h, stl_map.h, stl_algo.h, stl_function.h </p>
+<p>HP规范的头文件，如vector.h, deque.h, list.h, map.h, algo.h, function.h<br>第三类通常不推荐使用，所以我们不用考虑，可以认为它的功能与第一类文件一样（实际有区别）。</p>
+<h3 id="STL文件包含关系"><a href="#STL文件包含关系" class="headerlink" title="STL文件包含关系"></a>STL文件包含关系</h3><p>这是部分STL文件的包含关系：</p>
+<p><img src="https://findmecoder.github.io/blog-pic/stl/3.jpg" alt=""></p>
+<h3 id="空间配置器-allocator"><a href="#空间配置器-allocator" class="headerlink" title="空间配置器(allocator)"></a>空间配置器(allocator)</h3><p>图中左上角为空间配置器，通常我们可以在代码中用”#include <memory>“来包含它，它的实际实现在三个文件中：</memory></p>
+<p>stl_construct.h: 对象的构造和析构</p>
+<p>stl_alloc.h: 空间的配置和释放</p>
+<p>stl_uninitialized.h: 内存基本工具，用于提升性能</p>
+<p>注意看所有蓝色箭头，所有的容器都直接或间接的包含了allocator，说明所有的容器都依赖allocator来管理空间。 </p>
+<h4 id="容器-container"><a href="#容器-container" class="headerlink" title="容器(container)"></a>容器(container)</h4><p>图中不带后缀的文件就是标准头文件，比如vector；图中带后缀的就是标准头文件对应的实现文件，如stl_vector.h；容器vector的真正实现在stl_vector.h中。可以看到，大多数文件都有对应的关系：deque对应stl_queue.h，stack对应stl_stack …</p>
+<p>容器大致分为序列容器和关联容器，序列容器即逻辑上是序列化访问的容器，关联容器即通过键值对访问的容器。</p>
+<p>你会发现，序列容器queue和序列容器stack对应了不止一个文件stl_XXX.h文件，这是因为它们是一种配接器，是基于其他容器实现的。</p>
+<p>关联容器中，set和map，即集合与映射，set和map的底层基于红黑树实现（stl_tree.h文件），查询时间复杂度为O(log(n))，空间复杂度为O(n)。</p>
+<p>hash_set和hash_map的底层基于哈希表实现（stl_hashtable.h文件），查询时间复杂度为O(1)，空间复杂度比set和map高。</p>
+<h4 id="算法-algorithm"><a href="#算法-algorithm" class="headerlink" title="算法(algorithm)"></a>算法(algorithm)</h4><p>大多数容器或多或少包含了算法文件，这是因为许多容器内部的实现会用到一些基本算法。</p>
+<p>通常我们用”#include <algorithm>“来使用STL内部的算法，其背后的实现在stl_algobase.h（基本算法）和stl_algo.h（其他算法）。</algorithm></p>
+<p>numeric为数值型算法。</p>
+<h4 id="迭代器-iterator"><a href="#迭代器-iterator" class="headerlink" title="迭代器(iterator)"></a>迭代器(iterator)</h4><p>你肯定会问迭代器去哪儿了。</p>
+<p>在STL中，迭代器不是单独实现的（虽然有iterator头文件，但他只是用于实现一些特殊的迭代器），迭代器向用户和算法提供统一的数据访问方式，理应集中实现。但是各种容器千差万别，迭代器的内部实现对容器依赖较强，所以迭代器由每个容器自身包含并实现，对外开放统一的接口。</p>
+<p>所以迭代器的实现不会存在于单独的文件中。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">STL</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/15/c++3/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-lc8" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
@@ -195,19 +760,9 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given an array of integers, find two numbers such that they add up to a specific target number.<br>
-The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.<br>
-You may assume that each input would have exactly one solution.<br>
-Input: numbers={2, 7, 11, 15}, target=9<br>
-Output: index1=1, index2=2</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>方法 1：暴力，复杂度 O(n2)，会超时<br>
-方法 2：hash。用一个哈希表，存储每个数对应的下标，复杂度 O(n).<br>
-方法 3：先排序，然后左右夹逼，排序 O(nlogn)，左右夹逼 O(n)，最终 O(nlogn)。但是注<br>
-意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-
+        <h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given an array of integers, find two numbers such that they add up to a specific target number.<br>The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.<br>You may assume that each input would have exactly one solution.<br>Input: numbers={2, 7, 11, 15}, target=9<br>Output: index1=1, index2=2</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>方法 1：暴力，复杂度 O(n2)，会超时<br>方法 2：hash。用一个哈希表，存储每个数对应的下标，复杂度 O(n).<br>方法 3：先排序，然后左右夹逼，排序 O(nlogn)，左右夹逼 O(n)，最终 O(nlogn)。但是注<br>意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3>
       
 
       
@@ -303,39 +858,32 @@ Output: index1=1, index2=2</p>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given an unsorted array of integers, find the length of the longest consecutive elements sequence.<br>
-For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3, 4]. Return its length: 4.<br>
-Your algorithm should run in O(n) complexity<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>如果允许 O(n log n) 的复杂度，那么可以先排序，可是本题要求 O(n)。由于序列里的元素是无序的，又要求 O(n)，首先要想到用哈希表。用一个哈希表 unordered_map&lt;int, bool&gt; used 记录每个元素是否使用，对每个元素，以该元素为中心，往左右扩张，直到不连续为止，记录下最长的长度</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<pre><code>int longestConsecutive(const vector&lt;int&gt; &amp;num){
-	unordered_map&lt;int, bool&gt; used;
-	for (auto i : num)
-		used[i] = false;
-	int longest = 0;
-	for (auto i : num)
-	{
-		if (used[i])
-			continue;
-		used[i] = true;
-		int length = 1;
-		for (int j = i + 1; used.find(j) != used.end; j++){
-			used[j] = true;
-			++length;
-		}
-		for (int j = i - 1; used.find(j) != used.end(); j--){
-			used[j] = true;
-			+length;
-		}
-		longest = max(length, longest);
-	}
-	return longest;
+        <h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given an unsorted array of integers, find the length of the longest consecutive elements sequence.<br>For example, Given [100, 4, 200, 1, 3, 2], The longest consecutive elements sequence is [1,2, 3, 4]. Return its length: 4.<br>Your algorithm should run in O(n) complexity<br>You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>如果允许 O(n log n) 的复杂度，那么可以先排序，可是本题要求 O(n)。由于序列里的元素是无序的，又要求 O(n)，首先要想到用哈希表。用一个哈希表 unordered_map<int, bool=""> used 记录每个元素是否使用，对每个元素，以该元素为中心，往左右扩张，直到不连续为止，记录下最长的长度</int,></p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><pre><code>int longestConsecutive(const vector&lt;int&gt; &amp;num){
+    unordered_map&lt;int, bool&gt; used;
+    for (auto i : num)
+        used[i] = false;
+    int longest = 0;
+    for (auto i : num)
+    {
+        if (used[i])
+            continue;
+        used[i] = true;
+        int length = 1;
+        for (int j = i + 1; used.find(j) != used.end; j++){
+            used[j] = true;
+            ++length;
+        }
+        for (int j = i - 1; used.find(j) != used.end(); j--){
+            used[j] = true;
+            +length;
+        }
+        longest = max(length, longest);
+    }
+    return longest;
 }
 </code></pre>
-
       
 
       
@@ -407,6 +955,98 @@ You may assume no duplicate exists in the array.</p>
 
 
   
+    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/03/lc5/" class="archive-article-date">
+  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Binary-Tree-Level-Order-Traversal-II"><a href="#Binary-Tree-Level-Order-Traversal-II" class="headerlink" title="Binary Tree Level Order Traversal II"></a>Binary Tree Level Order Traversal II</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-lc6" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
@@ -427,40 +1067,34 @@ You may assume no duplicate exists in the array.</p>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
+        <h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>You are given a target value to search. If found in the array return its index, otherwise return -1.<br>You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>二分查找，难度主要在于左右边界的确定。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-	return -1;
-	}
-};</code></pre>
-
+    int search(int A[], int n, int target) {
+        int first = 0, last = n;
+        while (first != last) {
+            const int mid = (first + last) / 2;
+            if (A[mid] == target)
+                return mid;
+            if (A[first] &lt;= A[mid]) {
+                if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+                    last = mid;
+                else    
+                    first = mid + 1;
+            } 
+            else {
+            if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+                    first = mid + 1;
+                else
+                    last = mid;
+            }
+        }
+    return -1;
+    }
+};
+</code></pre>
       
 
       
@@ -536,100 +1170,6 @@ public:
 
 
   
-    <article id="post-lc5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/lc5/">Binary Tree Level Order Traversal</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/03/lc5/" class="archive-article-date">
-  	<time datetime="2018-06-03T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/03/lc5/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-lc2" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
@@ -650,80 +1190,64 @@ public:
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="search-in-rotated-sorted-array-i"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-i"></a> Search in Rotated Sorted Array I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>
-(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>
-You are given a target value to search. If found in the array return its index, otherwise return -1.<br>
-You may assume no duplicate exists in the array.</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>二分查找，难度主要在于左右边界的确定。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
+        <h2 id="Search-in-Rotated-Sorted-Array-I"><a href="#Search-in-Rotated-Sorted-Array-I" class="headerlink" title="Search in Rotated Sorted Array I"></a>Search in Rotated Sorted Array I</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Suppose a sorted array is rotated at some pivot unknown to you beforehand.<br>(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).<br>You are given a target value to search. If found in the array return its index, otherwise return -1.<br>You may assume no duplicate exists in the array.</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>二分查找，难度主要在于左右边界的确定。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>// 时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	int search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-			if (A[mid] == target)
-				return mid;
-			if (A[first] &lt;= A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else	
-					first = mid + 1;
-			} 
-			else {
-			if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			}
-		}
-		return -1;
-	}
+    int search(int A[], int n, int target) {
+        int first = 0, last = n;
+        while (first != last) {
+            const int mid = (first + last) / 2;
+            if (A[mid] == target)
+                return mid;
+            if (A[first] &lt;= A[mid]) {
+                if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+                    last = mid;
+                else    
+                    first = mid + 1;
+            } 
+            else {
+            if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+                    first = mid + 1;
+                else
+                    last = mid;
+            }
+        }
+        return -1;
+    }
 };
-</code></pre>
-<h2 id="search-in-rotated-sorted-array-ii"><a class="markdownIt-Anchor" href="#search-in-rotated-sorted-array-ii"></a> Search in Rotated Sorted Array II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>
-Would this affect the run-time complexity? How and why?<br>
-Write a function to determine if a given target is in the array.</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>
-如 [1,3,1,1,1]。<br>
-如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
+</code></pre><h2 id="Search-in-Rotated-Sorted-Array-II"><a href="#Search-in-Rotated-Sorted-Array-II" class="headerlink" title="Search in Rotated Sorted Array II"></a>Search in Rotated Sorted Array II</h2><h3 id="描述-1"><a href="#描述-1" class="headerlink" title="描述"></a>描述</h3><p>Follow up for ”Search in Rotated Sorted Array”: What if duplicates are allowed?<br>Would this affect the run-time complexity? How and why?<br>Write a function to determine if a given target is in the array.</p>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>允许重复元素，则上一题中如果 A[m]&gt;=A[l], 那么 [l,m] 为递增序列的假设就不能成立了，比<br>如 [1,3,1,1,1]。<br>如果 A[m]&gt;=A[l] 不能确定递增，那就把它拆分成两个条件：</p>
 <p>• 若 A[m]&gt;A[l]，则区间 [l,m] 一定递增</p>
 <p>• 若 A[m]==A[l] 确定不了，那就 l++，往下看一步即可。</p>
-<h3 id="代码-2"><a class="markdownIt-Anchor" href="#代码-2"></a> 代码</h3>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
+<h3 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h3><p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	bool search(int A[], int n, int target) {
-		int first = 0, last = n;
-		while (first != last) {
-			const int mid = (first + last) / 2;
-				if (A[mid] == target)
-					return true;
-				if (A[first] &lt; A[mid]) {
-				if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
-					last = mid;
-				else
-					first = mid + 1;
-				} else if (A[first] &gt; A[mid]) {
-				if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
-					first = mid + 1;
-				else
-					last = mid;
-			} else
+    bool search(int A[], int n, int target) {
+        int first = 0, last = n;
+        while (first != last) {
+            const int mid = (first + last) / 2;
+                if (A[mid] == target)
+                    return true;
+                if (A[first] &lt; A[mid]) {
+                if (A[first] &lt;= target &amp;&amp; target &lt; A[mid])
+                    last = mid;
+                else
+                    first = mid + 1;
+                } else if (A[first] &gt; A[mid]) {
+                if (A[mid] &lt; target &amp;&amp; target &lt;= A[last-1])
+                    first = mid + 1;
+                else
+                    last = mid;
+            } else
 
-			first++;
-		}
-		return false;
-	}
-};</code></pre>
-
+            first++;
+        }
+        return false;
+    }
+};
+</code></pre>
       
 
       
@@ -819,191 +1343,150 @@ public:
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="binary-tree-level-order-traversal-i"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-i"></a> Binary Tree Level Order Traversal I</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).<br>
-For example: Given binary tree {3,9,20,#,#,15,7},<br>
-return its level order traversal as:<br>
-[<br>
-[3],<br>
-[9,20],<br>
-[15,7]<br>
-]</p>
-<h3 id="递归版"><a class="markdownIt-Anchor" href="#递归版"></a> 递归版</h3>
-<p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
+        <h2 id="Binary-Tree-Level-Order-Traversal-I"><a href="#Binary-Tree-Level-Order-Traversal-I" class="headerlink" title="Binary Tree Level Order Traversal I"></a>Binary Tree Level Order Traversal I</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the level order traversal of its nodes’ values. (ie, from left to right, level by level).<br>For example: Given binary tree {3,9,20,#,#,15,7},<br>return its level order traversal as:<br>[<br>[3],<br>[9,20],<br>[15,7]<br>]</p>
+<h3 id="递归版"><a href="#递归版" class="headerlink" title="递归版"></a>递归版</h3><p>时间复杂度 O(log n)，空间复杂度 O(1)</p>
 <pre><code>class Solution {
 public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt;&gt; result;
-		traverse(root, 1, result);
-		return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
-		if (!root) return;
-		if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-		result[level-1].push_back(root-&gt;val);
-		traverse(root-&gt;left, level+1, result);
-		traverse(root-&gt;right, level+1, result);
-	}
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        traverse(root, 1, result);
+        return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+        if (!root) return;
+        if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+        result[level-1].push_back(root-&gt;val);
+        traverse(root-&gt;left, level+1, result);
+        traverse(root-&gt;right, level+1, result);
+    }
+};
+</code></pre><h3 id="迭代版"><a href="#迭代版" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if(root == nullptr) return result;
+        queue&lt;TreeNode*&gt; current, next;
+        vector&lt;int&gt; level; // elments in level level
+        current.push(root);
+        while (!current.empty())
+        {
+            while (!current.empty()) 
+            {
+            TreeNode* node = current.front();
+            current.pop();
+            level.push_back(node-&gt;val);
+            if (node-&gt;left != nullptr) next.push(node-&gt;left);
+            if (node-&gt;right != nullptr) next.push(node-&gt;right);
+            }
+            result.push_back(level);
+            level.clear();
+            swap(next, current);
+        }
+        return result;
+    }
+};
+</code></pre><h2 id="Binary-Tree-Level-Order-Traversal-II"><a href="#Binary-Tree-Level-Order-Traversal-II" class="headerlink" title="Binary Tree Level Order Traversal II"></a>Binary Tree Level Order Traversal II</h2><h3 id="描述-1"><a href="#描述-1" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the bottom-up level order traversal of its nodes’ values. (ie, from left to right,level by level from leaf to root).<br>For example: Given binary tree {3,9,20,#,#,15,7}<br>return its bottom-up level order traversal as:<br>[<br>[15,7]<br>[9,20],<br>[3],<br>]</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>在上一题的基础上，reverse() 一下即可。</p>
+<h3 id="递归版-1"><a href="#递归版-1" class="headerlink" title="递归版"></a>递归版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrderBottom(TreeNode *root) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        traverse(root, 1, result);
+        std::reverse(result.begin(), result.end()); // 比上一题多此一行
+        return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
+        if (!root) return;
+        if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+        result[level-1].push_back(root-&gt;val);
+        traverse(root-&gt;left, level+1, result);
+        traverse(root-&gt;right, level+1, result);
+    }
+};
+</code></pre><h3 id="迭代版-1"><a href="#迭代版-1" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if(root == nullptr) return result;
+        queue&lt;TreeNode*&gt; current, next;
+        vector&lt;int&gt; level; // elments in level level
+        current.push(root);
+        while (!current.empty())
+        {
+            while (!current.empty()) 
+            {
+            TreeNode* node = current.front();
+            current.pop();
+            level.push_back(node-&gt;val);
+            if (node-&gt;left != nullptr) next.push(node-&gt;left);
+            if (node-&gt;right != nullptr) next.push(node-&gt;right);
+            }
+            result.push_back(level);
+            level.clear();
+            swap(next, current);
+        }
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+</code></pre><h2 id="Binary-Tree-Zigzag-Level-Order-Traversal"><a href="#Binary-Tree-Zigzag-Level-Order-Traversal" class="headerlink" title="Binary Tree Zigzag Level Order Traversal"></a>Binary Tree Zigzag Level Order Traversal</h2><h3 id="描述-2"><a href="#描述-2" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the zigzag level order traversal of its nodes’ values. (ie, from left to right,<br>then right to left for the next level and alternate between).<br>For example: Given binary tree 3,9,20,#,#,15,7<br>return its zigzag level order traversal as:<br>[<br>[3],<br>[20,9],<br>[15,7]<br>]</p>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>广度优先遍历，用一个 bool 记录是从左到右还是从右到左，每一层结束就翻转一下。</p>
+<h3 id="递归版-2"><a href="#递归版-2" class="headerlink" title="递归版"></a>递归版</h3><p>递归版，时间复杂度 O(n)，空间复杂度 O(n)</p>
+<pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+    vector&lt;vector&lt;int&gt;&gt; result;
+    traverse(root, 1, result, true);
+    return result;
+    }
+    void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result,bool left_to_right) {
+    if (!root) return;
+    if (level &gt; result.size())
+        result.push_back(vector&lt;int&gt;());
+    if (left_to_right)
+        result[level-1].push_back(root-&gt;val);
+    else
+        result[level-1].insert(result[level-1].begin(), root-&gt;val);
+        traverse(root-&gt;left, level+1, result, !left_to_right);
+        traverse(root-&gt;right, level+1, result, !left_to_right);
+    }
+};
+</code></pre><h3 id="迭代版-2"><a href="#迭代版-2" class="headerlink" title="迭代版"></a>迭代版</h3><pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+        if (nullptr == root) return result;
+        queue&lt;TreeNode*&gt; q;
+        bool left_to_right = true; //left to right
+        vector&lt;int&gt; level; // one level&#39;s elements
+        q.push(root);
+        q.push(nullptr); // level separator
+        while (!q.empty()) {
+            TreeNode *cur = q.front();
+            q.pop();
+            if (cur) {
+            level.push_back(cur-&gt;val);
+            if (cur-&gt;left) q.push(cur-&gt;left);
+            if (cur-&gt;right) q.push(cur-&gt;right);
+            } else {
+            if (left_to_right) {
+                result.push_back(level);
+                } else {
+                    reverse(level.begin(), level.end());
+                    result.push_back(level);
+                }
+                    level.clear();
+                    left_to_right = !left_to_right;
+                    if (q.size() &gt; 0) 
+                        q.push(nullptr);
+                }
+            }
+        return result;
+    }
 };
 </code></pre>
-<h3 id="迭代版"><a class="markdownIt-Anchor" href="#迭代版"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if(root == nullptr) return result;
-		queue&lt;TreeNode*&gt; current, next;
-		vector&lt;int&gt; level; // elments in level level
-		current.push(root);
-		while (!current.empty())
-		{
-			while (!current.empty()) 
-			{
-			TreeNode* node = current.front();
-			current.pop();
-			level.push_back(node-&gt;val);
-			if (node-&gt;left != nullptr) next.push(node-&gt;left);
-			if (node-&gt;right != nullptr) next.push(node-&gt;right);
-			}
-			result.push_back(level);
-			level.clear();
-			swap(next, current);
-		}
-		return result;
-	}
-};
-</code></pre>
-<h2 id="binary-tree-level-order-traversal-ii"><a class="markdownIt-Anchor" href="#binary-tree-level-order-traversal-ii"></a> Binary Tree Level Order Traversal II</h2>
-<h3 id="描述-2"><a class="markdownIt-Anchor" href="#描述-2"></a> 描述</h3>
-<p>Given a binary tree, return the bottom-up level order traversal of its nodes’ values. (ie, from left to right,level by level from leaf to root).<br>
-For example: Given binary tree {3,9,20,#,#,15,7}<br>
-return its bottom-up level order traversal as:<br>
-[<br>
-[15,7]<br>
-[9,20],<br>
-[3],<br>
-]</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>在上一题的基础上，reverse() 一下即可。</p>
-<h3 id="递归版-2"><a class="markdownIt-Anchor" href="#递归版-2"></a> 递归版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrderBottom(TreeNode *root) {
-		vector&lt;vector&lt;int&gt;&gt; result;
-		traverse(root, 1, result);
-		std::reverse(result.begin(), result.end()); // 比上一题多此一行
-		return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result) {
-		if (!root) return;
-		if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-		result[level-1].push_back(root-&gt;val);
-		traverse(root-&gt;left, level+1, result);
-		traverse(root-&gt;right, level+1, result);
-	}
-};
-</code></pre>
-<h3 id="迭代版-2"><a class="markdownIt-Anchor" href="#迭代版-2"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; levelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if(root == nullptr) return result;
-		queue&lt;TreeNode*&gt; current, next;
-		vector&lt;int&gt; level; // elments in level level
-		current.push(root);
-		while (!current.empty())
-		{
-			while (!current.empty()) 
-			{
-			TreeNode* node = current.front();
-			current.pop();
-			level.push_back(node-&gt;val);
-			if (node-&gt;left != nullptr) next.push(node-&gt;left);
-			if (node-&gt;right != nullptr) next.push(node-&gt;right);
-			}
-			result.push_back(level);
-			level.clear();
-			swap(next, current);
-		}
-		reverse(result.begin(), result.end());
-		return result;
-	}
-};
-</code></pre>
-<h2 id="binary-tree-zigzag-level-order-traversal"><a class="markdownIt-Anchor" href="#binary-tree-zigzag-level-order-traversal"></a> Binary Tree Zigzag Level Order Traversal</h2>
-<h3 id="描述-3"><a class="markdownIt-Anchor" href="#描述-3"></a> 描述</h3>
-<p>Given a binary tree, return the zigzag level order traversal of its nodes’ values. (ie, from left to right,<br>
-then right to left for the next level and alternate between).<br>
-For example: Given binary tree 3,9,20,#,#,15,7<br>
-return its zigzag level order traversal as:<br>
-[<br>
-[3],<br>
-[20,9],<br>
-[15,7]<br>
-]</p>
-<h3 id="分析-2"><a class="markdownIt-Anchor" href="#分析-2"></a> 分析</h3>
-<p>广度优先遍历，用一个 bool 记录是从左到右还是从右到左，每一层结束就翻转一下。</p>
-<h3 id="递归版-3"><a class="markdownIt-Anchor" href="#递归版-3"></a> 递归版</h3>
-<p>递归版，时间复杂度 O(n)，空间复杂度 O(n)</p>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
-	vector&lt;vector&lt;int&gt;&gt; result;
-	traverse(root, 1, result, true);
-	return result;
-	}
-	void traverse(TreeNode *root, size_t level, vector&lt;vector&lt;int&gt;&gt; &amp;result,bool left_to_right) {
-	if (!root) return;
-	if (level &gt; result.size())
-		result.push_back(vector&lt;int&gt;());
-	if (left_to_right)
-		result[level-1].push_back(root-&gt;val);
-	else
-		result[level-1].insert(result[level-1].begin(), root-&gt;val);
-		traverse(root-&gt;left, level+1, result, !left_to_right);
-		traverse(root-&gt;right, level+1, result, !left_to_right);
-	}
-};
-</code></pre>
-<h3 id="迭代版-3"><a class="markdownIt-Anchor" href="#迭代版-3"></a> 迭代版</h3>
-<pre><code>class Solution {
-public:
-	vector&lt;vector&lt;int&gt; &gt; zigzagLevelOrder(TreeNode *root) {
-		vector&lt;vector&lt;int&gt; &gt; result;
-		if (nullptr == root) return result;
-		queue&lt;TreeNode*&gt; q;
-		bool left_to_right = true; //left to right
-		vector&lt;int&gt; level; // one level's elements
-		q.push(root);
-		q.push(nullptr); // level separator
-		while (!q.empty()) {
-			TreeNode *cur = q.front();
-			q.pop();
-			if (cur) {
-			level.push_back(cur-&gt;val);
-			if (cur-&gt;left) q.push(cur-&gt;left);
-			if (cur-&gt;right) q.push(cur-&gt;right);
-			} else {
-			if (left_to_right) {
-				result.push_back(level);
-				} else {
-					reverse(level.begin(), level.end());
-					result.push_back(level);
-				}
-					level.clear();
-					left_to_right = !left_to_right;
-					if (q.size() &gt; 0) 
-						q.push(nullptr);
-				}
-			}
-		return result;
-	}
-};</code></pre>
-
       
 
       
@@ -1097,78 +1580,69 @@ public:
       
         <p>LeetCode 上二叉树的节点定义如下：</p>
 <pre><code>struct TreeNode {
-	int val;
-	TreeNode *left;
-	TreeNode *right;
-	TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
 };
-</code></pre>
-<h2 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h2>
-<p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
-<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>
-与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
+</code></pre><h2 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h2><p>树的遍历有两类：深度优先遍历和宽度优先遍历。深度优先遍历又可分为两种：先根（次序遍历和后根（次序）遍历。</p>
+<p>树的先根遍历是：先访问树的根结点，然后依次先根遍历根的各棵子树。树的先跟遍历的结果<br>与对应二叉树（孩子兄弟表示法）的先序遍历的结果相同。</p>
 <p>树的后根遍历是：先依次后根遍历树根的各棵子树，然后访问根结点。树的后跟遍历的结果与对应二叉树的中序遍历的结果相同。</p>
 <p>二叉树的先根遍历有：<strong>先序遍历</strong> (root-&gt;left-&gt;right)，root-&gt;right-&gt;left；后根遍历有：<strong>后序遍历</strong>(left-&gt;right-&gt;root)，right-&gt;left-&gt;root；二叉树还有个一般的树没有的遍历次序，<strong>中序遍历</strong> (left-&gt;root-&gt;right)。</p>
-<h2 id="binary-tree-preorder-traversal"><a class="markdownIt-Anchor" href="#binary-tree-preorder-traversal"></a> Binary Tree Preorder Traversal</h2>
-<h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>用栈或者 Morris 遍历。</p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码"></a> 代码</h3>
-<p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
+<h2 id="Binary-Tree-Preorder-Traversal"><a href="#Binary-Tree-Preorder-Traversal" class="headerlink" title="Binary Tree Preorder Traversal"></a>Binary Tree Preorder Traversal</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>Given a binary tree, return the preorder traversal of its nodes’ values.For example: Given binary tree {1,#,2,3}</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>用栈或者 Morris 遍历。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>使用栈，时间复杂度 O(n)，空间复杂度 O(n)</strong></p>
 <pre><code>class Solution {
 public:
-	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-		vector&lt;int&gt; result;
-		const TreeNode *p;
-		stack&lt;const TreeNode *&gt; s;
-		p = root;
-		if (p != nullptr) s.push(p);
-		while (!s.empty()) {
-			p = s.top();
-			s.pop();
-			result.push_back(p-&gt;val);
-			if (p-&gt;right != nullptr) s.push(p-&gt;right);
-			if (p-&gt;left != nullptr) s.push(p-&gt;left);
-		}
-		return result;
-	}
+    vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; result;
+        const TreeNode *p;
+        stack&lt;const TreeNode *&gt; s;
+        p = root;
+        if (p != nullptr) s.push(p);
+        while (!s.empty()) {
+            p = s.top();
+            s.pop();
+            result.push_back(p-&gt;val);
+            if (p-&gt;right != nullptr) s.push(p-&gt;right);
+            if (p-&gt;left != nullptr) s.push(p-&gt;left);
+        }
+        return result;
+    }
 };
-</code></pre>
-<p><strong>Morris 先序遍历</strong></p>
+</code></pre><p><strong>Morris 先序遍历</strong></p>
 <pre><code>class Solution {
 public:
-	vector&lt;int&gt; preorderTraversal(TreeNode *root) {
-		vector&lt;int&gt; result;
-		TreeNode *cur, *prev;
-		cur = root;
-		while (cur != nullptr) {
-			if (cur-&gt;left == nullptr) {
-				result.push_back(cur-&gt;val);
-				prev = cur; /* cur 刚刚被访问过 */
-				cur = cur-&gt;right;
-				} else {
-				/* 查找前驱 */
-				TreeNode *node = cur-&gt;left;
-				while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
-					node = node-&gt;right;
-				if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
-					result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
-					node-&gt;right = cur;
-					prev = cur; /* cur 刚刚被访问过 */
-					cur = cur-&gt;left;
-				} else { /* 已经线索化，则删除线索 */
-					node-&gt;right = nullptr;
-					/* prev = cur; 不能有这句，cur 已经被访问 */
-					cur = cur-&gt;right;
-				}
-			}
-		}
-		return result;
-	}
+    vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; result;
+        TreeNode *cur, *prev;
+        cur = root;
+        while (cur != nullptr) {
+            if (cur-&gt;left == nullptr) {
+                result.push_back(cur-&gt;val);
+                prev = cur; /* cur 刚刚被访问过 */
+                cur = cur-&gt;right;
+                } else {
+                /* 查找前驱 */
+                TreeNode *node = cur-&gt;left;
+                while (node-&gt;right != nullptr &amp;&amp; node-&gt;right != cur)
+                    node = node-&gt;right;
+                if (node-&gt;right == nullptr) { /* 还没线索化，则建立线索 */
+                    result.push_back(cur-&gt;val); /* 仅这一行的位置与中序不同 */
+                    node-&gt;right = cur;
+                    prev = cur; /* cur 刚刚被访问过 */
+                    cur = cur-&gt;left;
+                } else { /* 已经线索化，则删除线索 */
+                    node-&gt;right = nullptr;
+                    /* prev = cur; 不能有这句，cur 已经被访问 */
+                    cur = cur-&gt;right;
+                }
+            }
+        }
+        return result;
+    }
 };
 </code></pre>
-
       
 
       
@@ -1215,383 +1689,6 @@ public:
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/06/03/lc3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lc1" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/02/lc1/">Remove Duplicates from Sorted Array</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/02/lc1/" class="archive-article-date">
-  	<time datetime="2018-06-02T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="描述"><a class="markdownIt-Anchor" href="#描述"></a> 描述</h3>
-<p>Follow up for ”Remove Duplicates”: What if duplicates are allowed at most twice?<br>
-For example, Given sorted array A = [1,1,1,2,2,3],<br>
-Your function should return length = 5, and A is now [1,1,2,2,3]</p>
-<h3 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h3>
-<p>加一个变量记录一下元素出现的次数即可。这题因为是已经排序的数组，所以一个变量即可解决。如果是没有排序的数组，则需要引入一个 hashmap 来记录出现次数。</p>
-<h3 id="代码一"><a class="markdownIt-Anchor" href="#代码一"></a> 代码一</h3>
-<pre><code>class Solution {
-public:
-	int removeDuplicates(int A[], int n) 
-	{
-			if (n &lt;= 2) return n;
-			int index = 2;
-			for (int i = 2; i &lt; n; i++)
-			{
-				if (A[i] != A[index - 2])
-					A[index++] = A[i];
-			}
-			return index;
-	}
-};
-</code></pre>
-<h3 id="代码二"><a class="markdownIt-Anchor" href="#代码二"></a> 代码二</h3>
-<p>下面是一个更简洁的版本。上面的代码略长。不过扩展性好一些，例如将 occur &lt; 2 改为occur &lt; 3，就变成了允许重复最多 3 次。</p>
-<p>// 时间复杂度 O(n)，空间复杂度 O(1)</p>
-<pre><code>class Solution {
-public:
-	int removeDuplicates(int A[], int n) {
-		int index = 0;
-		for (int i = 0; i &lt; n; ++i) {
-			if (i &gt; 0 &amp;&amp; i &lt; n - 1 &amp;&amp; A[i] == A[i - 1] &amp;&amp; A[i] == A[i + 1])
-				continue;
-			A[index++] = A[i];
-		}
-		return index;
-	}
-};</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数组</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/LeetCode/" class="article-tag-list-link color4">LeetCode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/02/lc1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-ml1" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/01/ml1/">特征工程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/01/ml1/" class="archive-article-date">
-  	<time datetime="2018-06-01T15:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="主要内容"><a class="markdownIt-Anchor" href="#主要内容"></a> 主要内容</h2>
-<blockquote>
-<h4 id="特征工程概述"><a class="markdownIt-Anchor" href="#特征工程概述"></a> 特征工程概述</h4>
-<h4 id="特征归一化"><a class="markdownIt-Anchor" href="#特征归一化"></a> 特征归一化</h4>
-<h4 id="高维组合特征及处理"><a class="markdownIt-Anchor" href="#高维组合特征及处理"></a> 高维组合特征及处理</h4>
-</blockquote>
-<h2 id="正文"><a class="markdownIt-Anchor" href="#正文"></a> 正文</h2>
-<h3 id="1-特征工程概述"><a class="markdownIt-Anchor" href="#1-特征工程概述"></a> 1. 特征工程概述</h3>
-<p>​	数据决定了机器学习的上限，而算法只是尽可能逼近这个上限”，这里的数据指的就是经过特征工程得到的数据。特征工程指的是把原始数据转变为模型的训练数据的过程，它的目的就是获取更好的训练数据特征，使得机器学习模型逼近这个上限。特征工程能使得模型的性能得到提升，有时甚至在简单的模型上也能取得不错的效果。特征工程在机器学习中占有非常重要的作用，一般认为括特征构建、特征提取、特征选择三个部分。特征构建比较麻烦，需要一定的经验。 特征提取与特征选择都是为了从原始特征中找出最有效的特征。它们之间的区别是特征提取强调通过特征转换的方式得到一组具有明显物理或统计意义的特征；而特征选择是从特征集合中挑选一组具有明显物理或统计意义的特征子集。两者都能帮助减少特征的维度、数据冗余，特征提取有时能发现更有意义的特征属性，特征选择的过程经常能表示出每个特征的重要性对于模型构建的重要性。本文主要尝试总结几个常用的特征提取和特征选择的方法。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/1.jpg" alt=""></p>
-<h3 id="2-特征归一化"><a class="markdownIt-Anchor" href="#2-特征归一化"></a> 2. 特征归一化</h3>
-<p>​	对数值类型的特征做归一化可以将所有的特征都统一到一个大致相同的数值区间内。最常用的方法主要有以下两种。</p>
-<p>（1）线性函数归一化（Min-Max Scaling）。它对原始数据进行线性变换，使结果映射到[0, 1]的范围，实现对原始数据的等比缩放。归一化公式如下。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/2.jpg" alt=""></p>
-<p>其中X为原始数据，Xmax、Xmin分别为数据最大值和最小值</p>
-<p>（2）零均值归一化（Z-Score Normalization）。它会将原始数据映射到均值为0、标准差为1的分布上。具体来说，假设原始特征的均值为μ、标准差为σ，那么归一化公式定义为</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/3.jpg" alt=""></p>
-<p>​	为什么需要对数值型特征做归一化呢？我们不妨借助随机梯度下降的实例来说明归一化的重要性。假设有两种数值型特征，x1的取值范围为 [0, 10]，x2的取值范围为[0, 3]，于是可以构造一个目标函数符合图1.1（a）中的等值图。在学习速率相同的情况下，x1的更新速度会大于x2，需要较多的迭代才能找到最优解。如果将x1和x2归一化到相同的数值区间后，优化目标的等值图会变成图1.1（b）中的圆形，x1和x2的更新速度变得更为一致，容易更快地通过梯度下降找到最优解。</p>
-<p><img src="https://findmecoder.github.io/blog-pic/ml/4.jpg" alt=""></p>
-<p>​										图1.1 数据归一化对梯度下降收敛速度产生的影响</p>
-<p>​	当然，数据归一化并不是万能的。在实际应用中，通过梯度下降法求解的模型通常是需要归一化的，包括线性回归、逻辑回归、支持向量机、神经网络等模型。但对于决策树模型则并不适用，以C4.5为例，决策树在进行节点分裂时主要依据数据集D关于特征x的信息增益比，而信息增益比跟特征是否经过归一化是无关的，因为归一化并不会改变样本在特征x上的信息增益。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">机器学习</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/机器学习/" class="article-tag-list-link color5">机器学习</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/01/ml1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-c++5" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/02/c++5/">epoll的理解</a>
-    </h1>
-  
-
-        
-        <a href="/2018/04/02/c++5/" class="archive-article-date">
-  	<time datetime="2018-04-02T05:47:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。不管是文件，还是套接字，还是管道，我们都可以把他们看作流。之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从socket读如数据，但是服务器还没有把数据传回来），这时候该怎么办？</p>
-<p>阻塞。阻塞是个什么概念呢？比如某个时候你在等快递，但是你不知道快递什么时候过来，而且你没有别的事可以干（或者说接下来的事要等快递来了才能做）；那么你可以去睡觉了，因为你知道快递把货送来时一定会给你打个电话（假定一定能叫醒你）。</p>
-<p>非阻塞忙轮询。接着上面等快递的例子，如果用忙轮询的方法，那么你需要知道快递员的手机号，然后每分钟给他挂个电话：“你到了没？”</p>
-<p>为了了解阻塞是如何进行的，我们来讨论缓冲区，以及内核缓冲区，最终把I/O事件解释清楚。缓冲区的引入是为了减少频繁I/O操作而引起频繁的系统调用（你知道它很慢的），当你操作一个流时，更多的是以缓冲区为单位进行操作，这是相对于用户空间而言。对于内核来说，也需要缓冲区。假设有一个管道，进程A为管道的写入方，Ｂ为管道的读出方。</p>
-<p>假设一开始内核缓冲区是空的，B作为读出方，被阻塞着。然后首先A往管道写入，这时候内核缓冲区由空的状态变到非空状态，内核就会产生一个事件告诉Ｂ该醒来了，这个事件姑且称之为“缓冲区非空”。</p>
-<p>但是“缓冲区非空”事件通知B后，B却还没有读出数据；且内核许诺了不能把写入管道中的数据丢掉这个时候，Ａ写入的数据会滞留在内核缓冲区中，如果内核也缓冲区满了，B仍未开始读数据，最终内核缓冲区会被填满，这个时候会产生一个I/O事件，告诉进程A，你该等等（阻塞）了，我们把这个事件定义为“缓冲区满”。</p>
-<p>假设后来Ｂ终于开始读数据了，于是内核的缓冲区空了出来，这时候内核会告诉A，内核缓冲区有空位了，你可以从长眠中醒来了，继续写数据了，我们把这个事件叫做“缓冲区非满”。</p>
-<p>也许事件Y1已经通知了A，但是A也没有数据写入了，而Ｂ继续读出数据，知道内核缓冲区空了。这个时候内核就告诉B，你需要阻塞了！，我们把这个时间定为“缓冲区空”。</p>
-<p>然后我们来说说阻塞I/O的缺点。但是阻塞I/O模式下，一个线程只能处理一个流的I/O事件。如果想要同时处理多个流，要么多进程(fork)，要么多线程(pthread_create)，很不幸这两种方法效率都不高。于是再来考虑非阻塞忙轮询的I/O方式，我们发现我们可以同时处理多个流了（把一个流从阻塞模式切换到非阻塞模式再此不予讨论）。</p>
-<p>我们只要不停的把所有流从头到尾问一遍，又从头开始。这样就可以处理多个流了，但这样的做法显然不好，因为如果所有的流都没有数据，那么只会白白浪费CPU。这里要补充一点，阻塞模式下，内核对于I/O事件的处理是阻塞或者唤醒，而非阻塞模式下则把I/O事件交给其他对象（后文介绍的select以及epoll）处理甚至直接忽略。</p>
-<p>为了避免CPU空转，可以引进了一个代理（一开始有一位叫做select的代理，后来又有一位叫做poll的代理，不过两者的本质是一样的）。这个代理比较厉害，可以同时观察许多流的I/O事件，在空闲的时候，会把当前线程阻塞掉，当有一个或多个流有I/O事件时，就从阻塞态中醒来，于是我们的程序就会轮询一遍所有的流（于是我们可以把“忙”字去掉了）。代码长这样:</p>
-<p>于是，如果没有I/O事件产生，我们的程序就会阻塞在select处。但是依然有个问题，我们从select那里仅仅知道了，有I/O事件发生了，但却并不知道是那几个流（可能有一个，多个，甚至全部），我们只能无差别轮询所有流，找出能读出数据，或者写入数据的流，对他们进行操作。但是使用select，我们有O(n)的无差别轮询复杂度，同时处理的流越多，每一次无差别轮询时间就越长。</p>
-<p><em><strong>说了这么多，终于能好好解释epoll了</strong></em></p>
-<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数，也有认为O(1)的，在讨论epoll的实现细节之前，先把epoll的相关操作列出。</p>
-<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。<br>
-此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数</p>
-<pre><code>epoll_create 创建一个epoll对象，一般epollfd = epoll_create()
-
-epoll_ctl （epoll_add/epoll_del的合体），往epoll对象中增加/删除某一个流的某一个事件比如
-
-epoll_ctl(epollfd, EPOLL_CTL_ADD, socket, EPOLLIN);//有缓冲区内有数据时epoll_wait返回
-
-epoll_ctl(epollfd, EPOLL_CTL_DEL, socket, EPOLLOUT);//缓冲区可写入时epoll_wait返回
-
-epoll_wait(epollfd,...)等待直到注册的事件发生
-</code></pre>
-<p><em><strong>有了上边的讲解，那么以网络 IO 为代表的事件是如何从网卡到内核，最终通知进程做相关处理的？</strong></em></p>
-<p>epoll其实是更复杂的设计和实现，基本原理是一致的。下面以 TCP 新建连接为例子，描述这一内核的处理过程：</p>
-<ol>
-<li>
-<p>网卡收到 SYN，触发内核中断，直接打断当前执行的进程，CPU 进行中断处理，最终将该 SYN 连接信息保存在相应 listen socket 的半连接队列里，并向对方发送 SYN-ACK，然后恢复运行被打断的进程。</p>
-</li>
-<li>
-<p>进程执行完当前作业，调用 accept 系统调用（阻塞）继续处理新连接。accept 发现连接队列当前没有新连接后，于是在 listen socket 的 wait queue 的上注册唤醒自身进程的回调函数，然后内核将这个进程置为 Block 状态，并让出 CPU 执行其他 Ready 状态的进程。</p>
-</li>
-<li>
-<p>网卡收到 ACK，继续触发内核中断，内核完成标准的三次握手，将连接从半连接队列移入连接队列，于是 listen socket 有可读事件，内核调用 listen socket 的 wait queue 的唤醒回调函数，将之前阻塞的 accept 进程置为 Ready 调度状态。</p>
-</li>
-<li>
-<p>在内核下一个 CPU 调度窗口来临时，Ready 调度状态的 accept 进程被选中执行，发现连接队列有新连接，于是读取连接信息，并最终返回给用户态进程。</p>
-</li>
-</ol>
-<p>从上面过程可见，内核处理硬件事件是一个同步的过程，而把事件传递给用户进程是一个异步的过程。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">后台开发</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">网络编程</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">epoll</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">多线程</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/后台开发/" class="article-tag-list-link color5">后台开发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/04/02/c++5/">展开全文 >></a>
         </p>
       
 
@@ -1755,10 +1852,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -1771,6 +1864,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">树</a>
               </li>
              
@@ -1779,11 +1876,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
               </li>
              
               <li class="article-tag-list-item">

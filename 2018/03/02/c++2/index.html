@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>c++中const关键字总结 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一. 基本描述 定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值  由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; //">
+  <meta name="description" content="一. 基本描述定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值 由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; // 正确">
 <meta name="keywords" content="C++,后台开发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="c++中const关键字总结">
 <meta property="og:url" content="http://yoursite.com/2018/03/02/c++2/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="一. 基本描述 定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值  由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; //">
+<meta property="og:description" content="一. 基本描述定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值 由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; // 正确">
 <meta property="og:locale" content="default">
 <meta property="og:updated_time" content="2019-03-30T03:12:06.667Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="c++中const关键字总结">
-<meta name="twitter:description" content="一. 基本描述 定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值  由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; //">
+<meta name="twitter:description" content="一. 基本描述定义变量时的限定符，表示变量值不能改变。 const int bufSize = 512; bufSize = 512; // 错误：试图向const对象写值 由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。 const int i = get_size(); // 正确 const int j = 42; // 正确">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -198,17 +198,14 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="一-基本描述"><a class="markdownIt-Anchor" href="#一-基本描述"></a> 一. 基本描述</h3>
-<p>定义变量时的限定符，表示变量值不能改变。</p>
+        <h3 id="一-基本描述"><a href="#一-基本描述" class="headerlink" title="一. 基本描述"></a>一. 基本描述</h3><p>定义变量时的限定符，表示变量值不能改变。</p>
 <pre><code>const int bufSize = 512;
 bufSize = 512; // 错误：试图向const对象写值
-</code></pre>
-<p>由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。</p>
+</code></pre><p>由于const一旦创建就不可更改，所以const对象必须初始化（否则定义一个默认值且不可修改的变量没有任何意义）。</p>
 <pre><code>const int i = get_size(); // 正确
 const int j = 42; // 正确
 const int k; // 错误：未初始化
-</code></pre>
-<p>使用值传递初始化时，被初始化的对象是否为const与初始化对象是否为const无关。</p>
+</code></pre><p>使用值传递初始化时，被初始化的对象是否为const与初始化对象是否为const无关。</p>
 <pre><code>int i = 0;
 int j = i; // 正确
 const int k = i; // 正确
@@ -216,17 +213,14 @@ const int k = i; // 正确
 const int x = 0;
 int y = x; // 正确
 const int z = x; // 正确
-</code></pre>
-<h3 id="二-const初始化引用时的例外"><a class="markdownIt-Anchor" href="#二-const初始化引用时的例外"></a> 二. const初始化引用时的例外</h3>
-<p>C++规定引用类型必须与被引用对象一致：</p>
+</code></pre><h3 id="二-const初始化引用时的例外"><a href="#二-const初始化引用时的例外" class="headerlink" title="二. const初始化引用时的例外"></a>二. const初始化引用时的例外</h3><p>C++规定引用类型必须与被引用对象一致：</p>
 <pre><code>int i = 2;
 double &amp;j = i; // 错误：引用类型与对象类型不一致
 还规定引用必须绑定到左值：
 
 int &amp;i = 2; // 错误：不允许用右值初始化
 int &amp;j = a * 2 // 错误：不允许用表达式初始化
-</code></pre>
-<p>但是用const初始化引用时会有例外：</p>
+</code></pre><p>但是用const初始化引用时会有例外：</p>
 <p>const引用类型与对象类型不一致（但可以转化）：</p>
 <pre><code>int i = 2;
 const double &amp;j = i; // 正确：j是常量引用
@@ -234,53 +228,38 @@ const引用绑定到一个非左值上（类型一致或可以转化）：
 
 const int &amp;i = 2; // 正确：i是常量引用
 const int &amp;j = a * 2 // 正确：j是常量引用
-</code></pre>
-<p>原因在于，const引用将会额外创建一个临时变量，并绑定上去。</p>
+</code></pre><p>原因在于，const引用将会额外创建一个临时变量，并绑定上去。</p>
 <p>C++支持这种做法的目的在于，既然不能通过const引用修改对象值，那么额外创建一个常量和直接绑定对象并没有什么区别，所以干脆让const引用支持这种非常规做法。</p>
-<h3 id="三-顶层const和底层const"><a class="markdownIt-Anchor" href="#三-顶层const和底层const"></a> 三. 顶层const和底层const</h3>
-<p>通常在指针/引用与const符同时使用时会用到这个概念。</p>
-<h4 id="1-const与指针"><a class="markdownIt-Anchor" href="#1-const与指针"></a> 1. const与指针</h4>
-<p>指针本身是一个独立的对象，它又可以指向另一个对象。</p>
+<h3 id="三-顶层const和底层const"><a href="#三-顶层const和底层const" class="headerlink" title="三. 顶层const和底层const"></a>三. 顶层const和底层const</h3><p>通常在指针/引用与const符同时使用时会用到这个概念。</p>
+<h4 id="1-const与指针"><a href="#1-const与指针" class="headerlink" title="1. const与指针"></a>1. const与指针</h4><p>指针本身是一个独立的对象，它又可以指向另一个对象。</p>
 <p>所以指针和const同时使用时，有两种情况：</p>
 <pre><code>int i = 0;
 int *const j = &amp;i; // 指针j指向i，const修饰指针j本身，所以j的地址值不允许修改，但是可以通过j修改i的值
 const int *k = &amp;i; // 指针k指向i，const修饰k指向的i，所以k的地址值可以修改，但是不可以通过k修改i的值
-</code></pre>
-<p>以上两种情况，修饰指针j本身的const称为顶层const，修饰k所指向变量i的const成为底层const。底层const与顶层const是两个互相独立的修饰符，互不影响。</p>
-<h4 id="2-const与引用"><a class="markdownIt-Anchor" href="#2-const与引用"></a> 2. const与引用</h4>
-<p>引用一旦初始化，就不能再修改（绑定），所以引用本身就具有&quot;const&quot;的性质。</p>
+</code></pre><p>以上两种情况，修饰指针j本身的const称为顶层const，修饰k所指向变量i的const成为底层const。底层const与顶层const是两个互相独立的修饰符，互不影响。</p>
+<h4 id="2-const与引用"><a href="#2-const与引用" class="headerlink" title="2. const与引用"></a>2. const与引用</h4><p>引用一旦初始化，就不能再修改（绑定），所以引用本身就具有”const”的性质。</p>
 <p>与指针相比，引用相当于内置了顶层const。</p>
 <p>所以使用引用时，就只需考虑是否为底层const：</p>
 <pre><code>int i = 0;
 const int &amp;j = i; // j为绑定到i的const引用，不允许使用j来修改i
-</code></pre>
-<h4 id="3-其他"><a class="markdownIt-Anchor" href="#3-其他"></a> 3. 其他</h4>
-<p>(1). 可以将底层const的指针（或引用）指向（或绑定）到非const对象，但不允许非底层const的指针（或引用）指向（或绑定）到const对象。 （即：const对象不允许通过任何方式（指针/引用）被修改。）</p>
+</code></pre><h4 id="3-其他"><a href="#3-其他" class="headerlink" title="3. 其他"></a>3. 其他</h4><p>(1). 可以将底层const的指针（或引用）指向（或绑定）到非const对象，但不允许非底层const的指针（或引用）指向（或绑定）到const对象。 （即：const对象不允许通过任何方式（指针/引用）被修改。）</p>
 <p>(2). 修饰值本身的const均为顶层const：</p>
 <pre><code>const int i = 0; // 顶层const;
-</code></pre>
-<h3 id="四-const与函数"><a class="markdownIt-Anchor" href="#四-const与函数"></a> 四. const与函数</h3>
-<h4 id="1-值传递的const形参"><a class="markdownIt-Anchor" href="#1-值传递的const形参"></a> 1. 值传递的const形参</h4>
-<pre><code>void fcn(const int i) { /* ... */ }
+</code></pre><h3 id="四-const与函数"><a href="#四-const与函数" class="headerlink" title="四. const与函数"></a>四. const与函数</h3><h4 id="1-值传递的const形参"><a href="#1-值传递的const形参" class="headerlink" title="1. 值传递的const形参"></a>1. 值传递的const形参</h4><pre><code>void fcn(const int i) { /* ... */ }
 这个函数中，变量i为值传递形参，根据值传递的初始化规则，形参i是否为const与传入的实参是否为const是完全无关的。这里的const仅表示i在函数体中不允许修改。
-</code></pre>
-<p>如下的调用均为合法调用：</p>
+</code></pre><p>如下的调用均为合法调用：</p>
 <pre><code>int x = 0;
 fcn(x);
 const int y = 0;
 fcn(y);
-</code></pre>
-<p>因为值传递的const形参在调用上与非const形参没有区别，所以仅仅使用const无法区分参数类别，所以无法实现函数重载，如下的重载是错误的：</p>
+</code></pre><p>因为值传递的const形参在调用上与非const形参没有区别，所以仅仅使用const无法区分参数类别，所以无法实现函数重载，如下的重载是错误的：</p>
 <pre><code>void fcn1(const int i) { /* ... */ }
 void fcn1(int i) { /* ... */ } // 错误：重复定义函数，不能实现重载
-</code></pre>
-<h4 id="2-const指针引用的形参"><a class="markdownIt-Anchor" href="#2-const指针引用的形参"></a> 2. const指针/引用的形参</h4>
-<p>对于顶层const的指针，与上一小节一样，其const性质与实参无关，顶层const仅表示指针/引用本身在函数体中不允许修改。</p>
+</code></pre><h4 id="2-const指针-引用的形参"><a href="#2-const指针-引用的形参" class="headerlink" title="2. const指针/引用的形参"></a>2. const指针/引用的形参</h4><p>对于顶层const的指针，与上一小节一样，其const性质与实参无关，顶层const仅表示指针/引用本身在函数体中不允许修改。</p>
 <p>所以我们只需要讨论底层const的指针/引用。</p>
 <pre><code>void fcn2(const int &amp;x) { /* ... */ } // 接受const或非const的int引用，但是不允许通过x修改传入的对象
 void fcn2(const int *y) { /* ... */ } // 接受const或非const的int指针，但是不允许通过y修改传入的对象
-</code></pre>
-<p>如上两个函数都定义了底层const的形式参数，它们可以接受const或非const对象，但是不能在函数体内修改这些对象。</p>
+</code></pre><p>如上两个函数都定义了底层const的形式参数，它们可以接受const或非const对象，但是不能在函数体内修改这些对象。</p>
 <p>所以如下的调用都是合法的：</p>
 <pre><code>int i = 0;
 fcn2(i); // 正确：调用第一个函数
@@ -289,25 +268,18 @@ fcn2(&amp;i); // 正确：调用第二个函数
 const int j = 0;
 fcn2(j); // 正确：调用第一个函数
 fcn2(&amp;j); // 正确：调用第二个函数
-</code></pre>
-<p>由于底层const描述实参性质，可以在调用时区分const，所以使用底层const的指针/引用可以实现函数重载：</p>
+</code></pre><p>由于底层const描述实参性质，可以在调用时区分const，所以使用底层const的指针/引用可以实现函数重载：</p>
 <pre><code>void fcn3(int &amp;x) { /* ... */ } 
 void fcn3(const int &amp;x) { /* ... */ } // 新函数，作用于const的引用
-</code></pre>
-<p>所以可以分别调用两个函数：</p>
+</code></pre><p>所以可以分别调用两个函数：</p>
 <pre><code>int i = 0;
 fcn3(i); // 正确：调用第一个函数
 
 const int j = 0;
 fcn3(j); // 正确：调用第二个函数
-</code></pre>
-<p>当传递非常量对象时，编译器会优先调用非常量版本的函数。</p>
-<h4 id="3-总结"><a class="markdownIt-Anchor" href="#3-总结"></a> 3. 总结</h4>
-<p>顶层const的形式参数不能实现函数重载，但底层const形参可以<br>
-当函数不修改参数值时，尽可能将形式参数定义为（底层）const参数，因为（底层）const参数可以接受常量与非常量对象，但非（底层）const参数只能接受非常量对象。</p>
-<h3 id="五-const与类"><a class="markdownIt-Anchor" href="#五-const与类"></a> 五. const与类</h3>
-<h4 id="1-const与类的成员变量"><a class="markdownIt-Anchor" href="#1-const与类的成员变量"></a> 1. const与类的成员变量</h4>
-<p>一个类通常包含成员函数和成员变量，对象的const修饰表示该对象的成员变量不允许被修改：</p>
+</code></pre><p>当传递非常量对象时，编译器会优先调用非常量版本的函数。</p>
+<h4 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h4><p>顶层const的形式参数不能实现函数重载，但底层const形参可以<br>当函数不修改参数值时，尽可能将形式参数定义为（底层）const参数，因为（底层）const参数可以接受常量与非常量对象，但非（底层）const参数只能接受非常量对象。</p>
+<h3 id="五-const与类"><a href="#五-const与类" class="headerlink" title="五. const与类"></a>五. const与类</h3><h4 id="1-const与类的成员变量"><a href="#1-const与类的成员变量" class="headerlink" title="1. const与类的成员变量"></a>1. const与类的成员变量</h4><p>一个类通常包含成员函数和成员变量，对象的const修饰表示该对象的成员变量不允许被修改：</p>
 <pre><code>class Number
 {
 public:
@@ -320,10 +292,8 @@ int main()
     n.number = 1; // 错误，n为const对象，不允许被修改
     return 0;
 }
-</code></pre>
-<p>无论类的成员变量本身是否为const，只要对象声明为const，均不允许被修改。</p>
-<h4 id="2-const与类的成员函数"><a class="markdownIt-Anchor" href="#2-const与类的成员函数"></a> 2. const与类的成员函数</h4>
-<p>当对象被声明为const时，该对象不能调用非const函数：</p>
+</code></pre><p>无论类的成员变量本身是否为const，只要对象声明为const，均不允许被修改。</p>
+<h4 id="2-const与类的成员函数"><a href="#2-const与类的成员函数" class="headerlink" title="2. const与类的成员函数"></a>2. const与类的成员函数</h4><p>当对象被声明为const时，该对象不能调用非const函数：</p>
 <pre><code>class Number
 {
 public:
@@ -340,8 +310,7 @@ int main()
     cout &lt;&lt; n.get() &lt;&lt; endl; // 错误，原因同上
     return 0;
 }
-</code></pre>
-<p>const对象不能调用非const函数的原因显而易见：非const函数可能修改成员变量。</p>
+</code></pre><p>const对象不能调用非const函数的原因显而易见：非const函数可能修改成员变量。</p>
 <p>将成员函数声明为const函数，则可以被const函数调用，声明const函数的方法为在其参数列表后添加const关键字：</p>
 <pre><code>class Number
 {
@@ -359,8 +328,7 @@ int main()
     cout &lt;&lt; n.get() &lt;&lt; endl; // 正确，const对象可以调用const函数
     return 0;
 }
-</code></pre>
-<p>并非所有成员函数都可以被声明为const函数，C++会在编译时检查被声明为const的函数是否修改了成员变量，若是，则报错，编译不通过。</p>
+</code></pre><p>并非所有成员函数都可以被声明为const函数，C++会在编译时检查被声明为const的函数是否修改了成员变量，若是，则报错，编译不通过。</p>
 <p>与底层const形参一样，const成员函数也可以实现重载：</p>
 <pre><code>class T
 {
@@ -378,27 +346,20 @@ int main()
     cout &lt;&lt; t2.fcn() &lt;&lt; endl; // 调用第二个函数，输出&quot;2&quot;
     return 0;
 }
-</code></pre>
-<p>同样，当非常量对象调用函数时，编译器会优先调用非常量版本的函数。</p>
-<h4 id="3-总结-2"><a class="markdownIt-Anchor" href="#3-总结-2"></a> 3. 总结</h4>
-<p>当函数不修改成员变量时，尽可能的将函数声明为const函数，因为const函数可以被非const对象和const对象调用，而非const函数只能被非const对象调用。<br>
-const函数并不意味着数据安全，虽然不能通过const函数修改成员变量，但是这样的const仅为顶层const，若成员变量包含非底层const的指针/引用，则依然可以通过这些指针/引用修改其指向/绑定的对象。</p>
-<h4 id="4-const成员函数实现机制"><a class="markdownIt-Anchor" href="#4-const成员函数实现机制"></a> 4. const成员函数实现机制</h4>
-<p>一个类包含成员变量和成员函数，更简单一点，一个类包含数据和代码。对象是类的实例，一个类可以构造许多对象，对象们的数据（成员变量）各自独立，而代码（成员函数）共用一份。</p>
+</code></pre><p>同样，当非常量对象调用函数时，编译器会优先调用非常量版本的函数。</p>
+<h4 id="3-总结-1"><a href="#3-总结-1" class="headerlink" title="3. 总结"></a>3. 总结</h4><p>当函数不修改成员变量时，尽可能的将函数声明为const函数，因为const函数可以被非const对象和const对象调用，而非const函数只能被非const对象调用。<br>const函数并不意味着数据安全，虽然不能通过const函数修改成员变量，但是这样的const仅为顶层const，若成员变量包含非底层const的指针/引用，则依然可以通过这些指针/引用修改其指向/绑定的对象。</p>
+<h4 id="4-const成员函数实现机制"><a href="#4-const成员函数实现机制" class="headerlink" title="4. const成员函数实现机制"></a>4. const成员函数实现机制</h4><p>一个类包含成员变量和成员函数，更简单一点，一个类包含数据和代码。对象是类的实例，一个类可以构造许多对象，对象们的数据（成员变量）各自独立，而代码（成员函数）共用一份。</p>
 <p>通常，我们调用成员函数和调用成员变量的方式类似：</p>
 <pre><code>Number n;
 n.number; // 调用成员变量
 n.set(2); // 调用成员函数
-</code></pre>
-<p>实际上，由于成员函数共享，所以调用成员函数的机制与调用成员变量的机制略有区别，简而言之，编译器先找到类，然后调用类的函数，再隐式地在参数列表中传入一个对象指针（this指针），表示需要操作该对象。</p>
+</code></pre><p>实际上，由于成员函数共享，所以调用成员函数的机制与调用成员变量的机制略有区别，简而言之，编译器先找到类，然后调用类的函数，再隐式地在参数列表中传入一个对象指针（this指针），表示需要操作该对象。</p>
 <p>所以，成员函数set()的声明和定义可以理解为：</p>
-<p>void Number::set(Number *const this, int num) { number = num; } // 仅作为参考，实际上，C++规定显式定义this指针为非法操作<br>
-即，任何一个成员函数都隐式地接受了一个指向对象的this指针。</p>
+<p>void Number::set(Number *const this, int num) { number = num; } // 仅作为参考，实际上，C++规定显式定义this指针为非法操作<br>即，任何一个成员函数都隐式地接受了一个指向对象的this指针。</p>
 <p>而在成员函数中对成员变量的默认调用实际上都是使用this指针的隐式调用，比如 number = num 等价于 this-&gt;number = num。</p>
 <p>那么，C++编译器检查const函数是否修改了成员变量的机制就很好理解了。</p>
 <p>只需要将this指针定义为底层const，以表示不能通过改指针修改成员变量：</p>
-<p>void Number::set(const Number *const this, int num) { number = num; } // 仅作为参考，实际上，C++规定显式定义this指针为非法操作<br>
-第一个const声明了this指针为底层const，而函数中的 number = num 实际为 this-&gt;number = num，由于this为底层const，所不能通过this修改number，该操作非法，所以该函数不能声明为const。</p>
+<p>void Number::set(const Number *const this, int num) { number = num; } // 仅作为参考，实际上，C++规定显式定义this指针为非法操作<br>第一个const声明了this指针为底层const，而函数中的 number = num 实际为 this-&gt;number = num，由于this为底层const，所不能通过this修改number，该操作非法，所以该函数不能声明为const。</p>
 <p>本质上，const函数还是通过传统的const机制逐条语句检查来实现的。</p>
 
       
@@ -498,11 +459,11 @@ n.set(2); // 调用成员函数
   
 <nav id="article-nav">
   
-    <a href="/2018/03/02/c++3/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/06/01/ml1/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          stl简介
+          特征工程
         
       </div>
     </a>
@@ -536,7 +497,7 @@ n.set(2); // 调用成员函数
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一-基本描述"><span class="toc-number">1.</span> <span class="toc-text"> 一. 基本描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二-const初始化引用时的例外"><span class="toc-number">2.</span> <span class="toc-text"> 二. const初始化引用时的例外</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三-顶层const和底层const"><span class="toc-number">3.</span> <span class="toc-text"> 三. 顶层const和底层const</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-const与指针"><span class="toc-number">3.1.</span> <span class="toc-text"> 1. const与指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const与引用"><span class="toc-number">3.2.</span> <span class="toc-text"> 2. const与引用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-其他"><span class="toc-number">3.3.</span> <span class="toc-text"> 3. 其他</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四-const与函数"><span class="toc-number">4.</span> <span class="toc-text"> 四. const与函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-值传递的const形参"><span class="toc-number">4.1.</span> <span class="toc-text"> 1. 值传递的const形参</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const指针引用的形参"><span class="toc-number">4.2.</span> <span class="toc-text"> 2. const指针/引用的形参</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-总结"><span class="toc-number">4.3.</span> <span class="toc-text"> 3. 总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五-const与类"><span class="toc-number">5.</span> <span class="toc-text"> 五. const与类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-const与类的成员变量"><span class="toc-number">5.1.</span> <span class="toc-text"> 1. const与类的成员变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const与类的成员函数"><span class="toc-number">5.2.</span> <span class="toc-text"> 2. const与类的成员函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-总结-2"><span class="toc-number">5.3.</span> <span class="toc-text"> 3. 总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-const成员函数实现机制"><span class="toc-number">5.4.</span> <span class="toc-text"> 4. const成员函数实现机制</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一-基本描述"><span class="toc-number">1.</span> <span class="toc-text">一. 基本描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二-const初始化引用时的例外"><span class="toc-number">2.</span> <span class="toc-text">二. const初始化引用时的例外</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三-顶层const和底层const"><span class="toc-number">3.</span> <span class="toc-text">三. 顶层const和底层const</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-const与指针"><span class="toc-number">3.1.</span> <span class="toc-text">1. const与指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const与引用"><span class="toc-number">3.2.</span> <span class="toc-text">2. const与引用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-其他"><span class="toc-number">3.3.</span> <span class="toc-text">3. 其他</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四-const与函数"><span class="toc-number">4.</span> <span class="toc-text">四. const与函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-值传递的const形参"><span class="toc-number">4.1.</span> <span class="toc-text">1. 值传递的const形参</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const指针-引用的形参"><span class="toc-number">4.2.</span> <span class="toc-text">2. const指针/引用的形参</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-总结"><span class="toc-number">4.3.</span> <span class="toc-text">3. 总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五-const与类"><span class="toc-number">5.</span> <span class="toc-text">五. const与类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-const与类的成员变量"><span class="toc-number">5.1.</span> <span class="toc-text">1. const与类的成员变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-const与类的成员函数"><span class="toc-number">5.2.</span> <span class="toc-text">2. const与类的成员函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-总结-1"><span class="toc-number">5.3.</span> <span class="toc-text">3. 总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-const成员函数实现机制"><span class="toc-number">5.4.</span> <span class="toc-text">4. const成员函数实现机制</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -705,10 +666,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">STL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
              
@@ -721,6 +678,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">树</a>
               </li>
              
@@ -729,11 +690,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
+                <a href="javascript:void(0)" class="js-tag color4">STL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二分法</a>
+                <a href="javascript:void(0)" class="js-tag color4">多线程</a>
               </li>
              
               <li class="article-tag-list-item">
