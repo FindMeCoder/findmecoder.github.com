@@ -17,7 +17,7 @@
 <meta property="og:description" content="词的分布式表示  基于矩阵的分布表示 1.基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://findmecoder.github.io/blog-pic/nlp/1.jpg">
-<meta property="og:updated_time" content="2019-04-01T10:47:28.297Z">
+<meta property="og:updated_time" content="2019-04-01T10:51:31.621Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="词向量，LDA，word2vec三者的关系是什么?">
 <meta name="twitter:description" content="词的分布式表示  基于矩阵的分布表示 1.基于矩阵的分布表示通常又称为分布语义模型，在这种表示下，矩阵中的一行，就成为了对应词的表示，这种表示描述了该词的上下文的分布。由于分布假说认为上下文相似的词，其语义也相似，因此在这种表示下，两个词的语义相似度可以直接转化为两个向量的空间距离。常见到的Global Vector 模型（ GloVe模型）是一种对“词-词”矩阵进行分解从而得到词表示的方法，属">
@@ -210,7 +210,9 @@ var _hmt = _hmt || [];
 <h4 id="概念"><a class="markdownIt-Anchor" href="#概念"></a> 概念</h4>
 <p>基于神经网络的分布表示又称为词向量、词嵌入，神经网络词向量模型与其它分布表示方法一样，均基于分布假说，核心依然是上下文的表示以及上下文与目标词之间的关系的建模。为了选择一种模型刻画某个词（下文称“目标词”）与其上下文之间的关系，我们需要在词向量中capture到一个词的上下文信息。同时，上面我们恰巧提到了统计语言模型正好具有捕捉上下文信息的能力。那么构建上下文与目标词之间的关系，最自然的一种思路就是使用语言模型。从历史上看，早期的词向量只是神经网络语言模型的副产品。</p>
 <h4 id="理解"><a class="markdownIt-Anchor" href="#理解"></a> 理解</h4>
-<p>one-hot表示法具有维度过大的缺点，那么现在将vector做一些改进：1、将vector每一个元素由整形改为浮点型，变为整个实数范围的表示；2、将原来稀疏的巨大维度压缩嵌入到一个更小维度的空间。如图</p>
+<p>one-hot表示法具有维度过大的缺点，那么现在将vector做一些改进：</p>
+<p>1.将vector每一个元素由整形改为浮点型，变为整个实数范围的表示。</p>
+<p>2.将原来稀疏的巨大维度压缩嵌入到一个更小维度的空间。</p>
 <p><img src="https://findmecoder.github.io/blog-pic/nlp/1.jpg" alt=""></p>
 <h3 id="神经网络语言模型与word2vec"><a class="markdownIt-Anchor" href="#神经网络语言模型与word2vec"></a> 神经网络语言模型与word2vec</h3>
 <p>通过神经网络训练语言模型可以得到词向量，那么，究竟有哪些类型的神经网络语言模型呢？个人所知，大致有这么些个：</p>
@@ -223,9 +225,9 @@ var _hmt = _hmt || [];
 <p>分布式词向量并不是word2vec的作者发明的，他只是提出了一种更快更好的方式来训练语言模型罢了。分别是：连续词袋模型Continous Bag of Words Model(CBOW)和Skip-Gram Model，这两种都是可以训练出词向量的方法，再具体代码操作中可以只选择其一，不过据论文说CBOW要更快一些。</p>
 <p>Word embedding的训练方法大致可以分为两类：一类是无监督或弱监督的预训练；一类是端对端（end to end）的有监督训练。无监督或弱监督的预训练以word2vec和auto-encoder为代表。这一类模型的特点是，不需要大量的人工标记样本就可以得到质量还不错的embedding向量。不过因为缺少了任务导向，可能和我们要解决的问题还有一定的距离。因此，我们往往会在得到预训练的embedding向量后，用少量人工标注的样本去训练整个模型。</p>
 <p>相比之下，端对端的有监督模型在最近几年里越来越受到人们的关注。与无监督模型相比，端对端的模型在结构上往往更加复杂。同时，也因为有着明确的任务导向，端对端模型学习到的embedding向量也往往更加准确。例如，通过一个embedding层和若干个卷积层连接而成的深度神经网络以实现对句子的情感分类，可以学习到语义更丰富的词向量表达。</p>
-<p><strong>词向量既能够降低维度，又能够capture到当前词在本句子中上下文的信息（表现为前后距离关系），那么我们对其用来表示语言句子词语作为NN的输入是非常自信与满意的。</strong></p>
+<p><strong>词向量既能够降低维度，又能够capture到当前词在本句子中上下文的信息（表现为前后距离关系），那么我们对其用来表示语言句子词语作为NN的输入是非常满意的。</strong></p>
 <p>词向量，有时候翻译为词嵌入（word embeddings），又可以称作distributed word representation[1], 最初起源是神经网络语言模型（Neural Networks Language Models）， <strong>Word2Vec</strong>是目前最常见的<strong>word embeddings</strong>，另外一种著名word embeddings是<strong>GloVe</strong>。</p>
-<p>**LDA（Latent Dirichlet Allocation）**是主题模型（Topic Models）的一种计算方法，和词向量并无直接关系，不过如果扯上另外一种topic model，<strong>LSA（Latent Semantic Analysis）</strong>，那就有一些关系了：</p>
+<p>***LDA（Latent Dirichlet Allocation）***是主题模型（Topic Models）的一种计算方法，和词向量并无直接关系，不过如果扯上另外一种topic model，<strong>LSA（Latent Semantic Analysis）</strong>，那就有一些关系了：</p>
 <p>1.LSA的核心技术是<strong>SVD</strong>，一种矩阵分解，而SVD一般在NLP中的使用并非是使用它分解的三个矩阵，而是合并右边两个矩阵。那么合并之后，<strong>左边</strong>的矩阵就可以视为<strong>word embeddings</strong>，而<strong>右边</strong>的矩阵可以视为当它是<strong>context时候的embeddings</strong>。当然，一般的矩阵分解， 比如NMF，也可以得到word embeddings。</p>
 <p>2.而word2vec一再被人证明，从结果看，是一个<strong>全局PPMI（共现）矩阵</strong>的分解。某种意义讲，word embeddings可以理解是传统矩阵分解的一个加速版本。另外LDA和word embeddings还是可以有点联系，比如加入LDA的结果作为word embeddings的输入，来增强文章分类效果。</p>
 <p>3.LDA的作用之一是通过对<strong>doc-word</strong>矩阵进行建模抽出<strong>doc-topic</strong>和<strong>topic-word</strong>两个分布。而<strong>word2vec</strong>其实是分解了<strong>word-context</strong>矩阵。其实都是对一个**“A”-“B”**矩阵进行建模。那么LDA自然也可以用于对word-context矩阵进行建模，而word2vec也可以对doc-word矩阵做分解。</p>
